@@ -45,7 +45,23 @@ input:focus{border-color:#606977}
 }
 body.reordering{user-select:none;-webkit-user-select:none;cursor:grabbing}
 body.reordering *{cursor:grabbing!important}
-.rank{height:54px;border-right:1px solid var(--line);display:grid;place-items:center;font-weight:900;font-variant-numeric:tabular-nums;color:#d7dbe1}
+.rank{
+  height:54px;border-right:1px solid var(--line);display:grid;place-items:center;
+  font-weight:900;font-variant-numeric:tabular-nums;color:#d7dbe1
+}
+.rank-input{
+  width:42px;height:38px;border:1px solid transparent;border-radius:9px;
+  background:transparent;color:#d7dbe1;text-align:center;padding:0;
+  font:900 18px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-variant-numeric:tabular-nums;outline:none;-moz-appearance:textfield
+}
+.rank-input::-webkit-outer-spin-button,
+.rank-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.rank-input:hover{background:#1c2026}
+.rank-input:focus{
+  background:#222730;border-color:var(--accent);color:#fff;
+  box-shadow:0 0 0 2px rgba(204,255,54,.1)
+}
 .cover{position:relative;width:66px;height:66px;border:0;padding:0;border-radius:11px;overflow:hidden;background:#1c2027;cursor:pointer;box-shadow:0 7px 20px rgba(0,0,0,.28)}
 .cover img{display:block;width:100%;height:100%;object-fit:cover}.cover-fallback{width:100%;height:100%;display:grid;place-items:end start;padding:7px;background:linear-gradient(145deg,#343b47,#121419);font-size:9px;text-align:left;color:#fff;font-weight:900}
 .play{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.12);transition:.15s}
@@ -73,12 +89,12 @@ body.reordering *{cursor:grabbing!important}
 @media(max-width:760px){
 .shell{padding:23px 10px 105px}.hero{margin-bottom:18px}.mark{display:none}h1{font-size:56px}.hero p{font-size:13px}
 .toolbar-wrap{margin:0 -10px;padding:7px 10px}.toolbar{grid-template-columns:1fr}.tools{display:grid;grid-template-columns:1fr auto auto}.tools .primary{width:100%}
-.song{grid-template-columns:38px 58px minmax(0,1fr);gap:9px;min-height:76px;padding:8px 7px 8px 4px}.rank{height:49px;font-size:14px}.cover{width:58px;height:58px;border-radius:9px}
+.song{grid-template-columns:44px 58px minmax(0,1fr);gap:9px;min-height:76px;padding:8px 7px 8px 4px}.rank{height:49px;font-size:14px}.rank-input{width:38px;height:38px;font-size:16px}.cover{width:58px;height:58px;border-radius:9px}
 .actions{grid-column:3;gap:5px;margin-top:1px}.move,.drag-handle,.brand{height:42px;min-width:42px}.drag-handle{display:grid}.title{font-size:14px}.meta{font-size:10px}
 .bottom{display:grid;position:fixed;z-index:80;left:9px;right:9px;bottom:max(9px,env(safe-area-inset-bottom));grid-template-columns:1fr 1fr;gap:7px;padding:7px;border-radius:15px;background:rgba(17,19,24,.94);border:1px solid var(--line2);backdrop-filter:blur(16px);box-shadow:0 15px 48px rgba(0,0,0,.45)}.bottom .btn{height:48px}
 .export-backdrop{padding:7px}.export-sheet{border-radius:20px 20px 10px 10px}
 }
-@media(max-width:410px){h1{font-size:50px}.song{grid-template-columns:34px 54px minmax(0,1fr);gap:7px}.cover{width:54px;height:54px}.actions{gap:4px}.move,.drag-handle,.brand{height:40px;min-width:40px}}
+@media(max-width:410px){h1{font-size:50px}.song{grid-template-columns:42px 54px minmax(0,1fr);gap:7px}.rank-input{width:36px}.cover{width:54px;height:54px}.actions{gap:4px}.move,.drag-handle,.brand{height:40px;min-width:40px}}
 
 
 
@@ -143,7 +159,7 @@ const SPOTIFY_ARTWORK_OVERRIDES={
 
 
 const SONGS=[{"id":0,"title":"Be tylos","release":"Raktas","year":2013,"artist":"ba.","alt":false,"search":"ba. Be tylos","dateHint":"2013-05-10"},{"id":1,"title":"Spaudžia iš aplink laisvė iš vidaus","release":"Raktas","year":2013,"artist":"ba.","alt":false,"search":"ba. Spaudžia iš aplink laisvė iš vidaus","dateHint":"2013-05-10"},{"id":2,"title":"Tai ne žmogus","release":"Raktas","year":2013,"artist":"ba.","alt":false,"search":"ba. Tai ne žmogus","dateHint":"2013-05-10"},{"id":3,"title":"Tu jauti / lieti","release":"Raktas","year":2013,"artist":"ba.","alt":false,"search":"ba. Tu jauti / lieti","dateHint":"2013-05-10"},{"id":4,"title":"Raktas","release":"Raktas","year":2013,"artist":"ba.","alt":false,"search":"ba. Raktas","dateHint":"2013-05-10"},{"id":5,"title":"Aš pats esi","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Aš pats esi","dateHint":"2015-02-23"},{"id":6,"title":"Naktį judu","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Naktį judu","dateHint":"2015-02-23"},{"id":7,"title":"Jaučiu / pavėsių aidų","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Jaučiu / pavėsių aidų","dateHint":"2015-02-23"},{"id":8,"title":"Į mane","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Į mane","dateHint":"2015-02-23"},{"id":9,"title":"Kodėl tu toks aš","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Kodėl tu toks aš","dateHint":"2015-02-23"},{"id":10,"title":"Klaidos","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Klaidos","dateHint":"2015-02-23"},{"id":11,"title":"Ar sau tiesą sakai","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Ar sau tiesą sakai","dateHint":"2015-02-23"},{"id":12,"title":"Juodaesi","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Juodaesi","dateHint":"2015-02-23"},{"id":13,"title":"Rasti / Pasiklysti","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Rasti / Pasiklysti","dateHint":"2015-02-23"},{"id":14,"title":"Juda kojos / jauti","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Juda kojos / jauti","dateHint":"2015-02-23"},{"id":16,"title":"Sugebėt pasikeist - Bonus Track","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":true,"search":"ba. Sugebėt pasikeist - Bonus Track","dateHint":"2015-02-23"},{"id":17,"title":"Kūną palikai / atsibudai","release":"Saulėsužtemimas","year":2016,"artist":"ba.","alt":false,"search":"ba. Kūną palikai / atsibudai","dateHint":"2016-01-01"},{"id":18,"title":"Byru iš lėto","release":"Saulėsužtemimas","year":2016,"artist":"ba.","alt":false,"search":"ba. Byru iš lėto","dateHint":"2016-01-01"},{"id":19,"title":"Saulėsužtemimas","release":"Saulėsužtemimas","year":2016,"artist":"ba.","alt":false,"search":"ba. Saulėsužtemimas","dateHint":"2016-01-01"},{"id":20,"title":"Auka","release":"Garsiai Mąstau","year":2017,"artist":"ba.","alt":false,"search":"ba. Auka","dateHint":"2017-01-01"},{"id":21,"title":"Sapne / Patalpoje","release":"Garsiai Mąstau","year":2017,"artist":"ba.","alt":false,"search":"ba. Sapne / Patalpoje","dateHint":"2017-01-01"},{"id":22,"title":"Vaikai²","release":"Garsiai Mąstau","year":2017,"artist":"ba.","alt":false,"search":"ba. Vaikai²","dateHint":"2017-01-01"},{"id":23,"title":"L2","release":"Garsiai Mąstau","year":2017,"artist":"ba.","alt":false,"search":"ba. L2","dateHint":"2017-01-01"},{"id":75,"title":"Paprastu Instinktu Gyvenu","release":"Single","year":2017,"artist":"ba. feat. Despotin Fam","alt":false,"search":"ba. feat. Despotin Fam Paprastu Instinktu Gyvenu","dateHint":"2017-12-31"},{"id":76,"title":"Pati kalta","release":"Single","year":2017,"artist":"ba.","alt":false,"search":"ba. Pati kalta","dateHint":"2017-12-31"},{"id":78,"title":"Randai=veiksmai","release":"Single","year":2018,"artist":"ba.","alt":false,"search":"ba. Randai=veiksmai","dateHint":"2018-12-31"},{"id":24,"title":"Atsiprashow","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Atsiprashow","dateHint":"2019-01-01"},{"id":25,"title":"Akli Vagiai","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Akli Vagiai","dateHint":"2019-01-01"},{"id":26,"title":"Savo","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Savo","dateHint":"2019-01-01"},{"id":27,"title":"Iliuzija","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Iliuzija","dateHint":"2019-01-01"},{"id":28,"title":"Ramunė pt.1","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Ramunė pt.1","dateHint":"2019-01-01"},{"id":29,"title":"Ramunė pt.2","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Ramunė pt.2","dateHint":"2019-01-01"},{"id":30,"title":"Antisentimentalus","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Antisentimentalus","dateHint":"2019-01-01"},{"id":31,"title":"Hirudinea","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Hirudinea","dateHint":"2019-01-01"},{"id":32,"title":"Išnara","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Išnara","dateHint":"2019-01-01"},{"id":33,"title":"Outro","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Outro","dateHint":"2019-01-01"},{"id":57,"title":"Trenk","release":"Single","year":2020,"artist":"ba.","alt":false,"search":"ba. Trenk","dateHint":"2020-12-31"},{"id":54,"title":"Vitrina","release":"Single","year":2021,"artist":"ba.","alt":false,"search":"ba. Vitrina","dateHint":"2021-12-31"},{"id":55,"title":"Pilnatis","release":"Single","year":2021,"artist":"ba.","alt":false,"search":"ba. Pilnatis","dateHint":"2021-12-31"},{"id":56,"title":"Paralyžius","release":"Single","year":2021,"artist":"ba.","alt":false,"search":"ba. Paralyžius","dateHint":"2021-12-31"},{"id":34,"title":"NUOGAS NERVAS","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. NUOGAS NERVAS","dateHint":"2022-09-30"},{"id":35,"title":"FONAS","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. FONAS","dateHint":"2022-09-30"},{"id":36,"title":"PAŽADAI","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. PAŽADAI","dateHint":"2022-09-30"},{"id":37,"title":"TRŪNO KIAURAI","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. TRŪNO KIAURAI","dateHint":"2022-09-30"},{"id":38,"title":"PURVO GERKLE","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. PURVO GERKLE","dateHint":"2022-09-30"},{"id":39,"title":"IŠ NAUJO","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. IŠ NAUJO","dateHint":"2022-09-30"},{"id":40,"title":"SKĘSTAM","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. SKĘSTAM","dateHint":"2022-09-30"},{"id":41,"title":"LINIJA","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. LINIJA","dateHint":"2022-09-30"},{"id":42,"title":"PRARADAU MINTIS","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. PRARADAU MINTIS","dateHint":"2022-09-30"},{"id":43,"title":"ŠOKIS","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. ŠOKIS","dateHint":"2022-09-30"},{"id":60,"title":"Žodžiai","release":"Single","year":2023,"artist":"Gintariniai Laikai & ba.","alt":false,"search":"Gintariniai Laikai & ba. Žodžiai","dateHint":"2023-12-31"},{"id":44,"title":"Veidas","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Veidas","dateHint":"2024-12-09"},{"id":45,"title":"VHS","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. VHS","dateHint":"2024-12-09"},{"id":46,"title":"Kiek Dar Vargo","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Kiek Dar Vargo","dateHint":"2024-12-09"},{"id":47,"title":"Silpti Naudoje","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Silpti Naudoje","dateHint":"2024-12-09"},{"id":48,"title":"Kultas","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Kultas","dateHint":"2024-12-09"},{"id":49,"title":"Lėlė","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Lėlė","dateHint":"2024-12-09"},{"id":50,"title":"Istorija","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Istorija","dateHint":"2024-12-09"},{"id":51,"title":"Atleisk Man","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Atleisk Man","dateHint":"2024-12-09"},{"id":52,"title":"Atidavei","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Atidavei","dateHint":"2024-12-09"},{"id":53,"title":"Pastovi","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Pastovi","dateHint":"2024-12-09"},{"id":77,"title":"LAIKAI MANE","release":"Single","year":2024,"artist":"ba.","alt":false,"search":"ba. LAIKAI MANE","dateHint":"2024-12-31"},{"id":61,"title":"DRUGIO EFEKTAS","release":"Single/feature","year":2025,"artist":"Angelou & ba.","alt":false,"search":"Angelou & ba. DRUGIO EFEKTAS","dateHint":"2025-12-31"},{"id":62,"title":"Skandalas","release":"Single/feature","year":2025,"artist":"Requiem feat. ba.","alt":false,"search":"Requiem feat. ba. Skandalas","dateHint":"2025-12-31"},{"id":74,"title":"NUODAI","release":"JV2026","year":2026,"artist":"ba. feat. solo ansamblis","alt":false,"search":"ba. feat. solo ansamblis NUODAI","dateHint":"2026-05-21"},{"id":64,"title":"5K. PAROJE","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. 5K. PAROJE","dateHint":"2026-06-14"},{"id":65,"title":"APMAUDU","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. APMAUDU","dateHint":"2026-06-14"},{"id":66,"title":"(PA)LAIKAI MANE","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. (PA)LAIKAI MANE","dateHint":"2026-06-14"},{"id":67,"title":"VIENĄ DIENĄ","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. VIENĄ DIENĄ","dateHint":"2026-06-14"},{"id":68,"title":"KLOJA KLOJA","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. KLOJA KLOJA","dateHint":"2026-06-14"},{"id":69,"title":"AŠ SUGRĮŠIU","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. AŠ SUGRĮŠIU","dateHint":"2026-06-14"},{"id":70,"title":"DULKĖS","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. DULKĖS","dateHint":"2026-06-14"},{"id":71,"title":"PADĖTIS","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. PADĖTIS","dateHint":"2026-06-14"},{"id":72,"title":"JDS","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. JDS","dateHint":"2026-06-14"},{"id":73,"title":"OUTRO","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. OUTRO","dateHint":"2026-06-14"},{"id":63,"title":"Nidos daina","release":"Single/feature","year":2026,"artist":"Nidos daina & ba.","alt":false,"search":"Nidos daina & ba. Nidos daina","dateHint":"2026-12-31"}];
-const KEY="ba-ranking-v13";
+const KEY="ba-ranking-v14";
 let media=new Map(), order=SONG_IDS(), currentAudio=null, currentSongId=null, currentSource=null, dragState=null, spotifyController=null, spotifyReady=false, spotifyLoadedSongId=null;
 function SONG_IDS(){return SONGS.map(s=>s.id)}
 const $=q=>document.querySelector(q), byId=id=>SONGS.find(s=>s.id===Number(id));
@@ -246,7 +262,19 @@ function render(){
  $("#count").textContent=SONGS.length;
  for(const {s,idx} of visible){
   const m=media.get(s.id),art=artFor(s),el=document.createElement("article");el.className="song";el.dataset.id=s.id;
-  el.innerHTML=`<div class="rank">${idx+1}</div>
+  el.innerHTML=`<div class="rank">
+    <input
+      class="rank-input"
+      type="number"
+      inputmode="numeric"
+      pattern="[0-9]*"
+      min="1"
+      max="${order.length}"
+      value="${idx+1}"
+      data-rank-id="${s.id}"
+      aria-label="Move ${esc(s.title)} to ranking position"
+      title="Type a ranking number and press Enter">
+   </div>
    <button class="cover" data-action="preview" aria-label="Preview ${esc(s.title)}">${art?`<img src="${esc(art)}" alt="">`:`<div class="cover-fallback">${esc(s.release)}</div><div class="loader">${m?"no art":"loading"}</div>`}<span class="play"></span></button>
    <div class="copy"><div class="title">${esc(s.title)}</div><div class="meta">${esc(s.release)} · ${esc(displayDate(s))}</div></div>
    <div class="actions">
@@ -259,9 +287,70 @@ function render(){
   el.addEventListener("click",e=>{const a=e.target.closest("[data-action]")?.dataset.action;if(a==="up")move(s.id,-1);if(a==="down")move(s.id,1);if(a==="preview")togglePreview(s,e.target.closest(".cover"))});
   root.appendChild(el)
  }
+ document.querySelectorAll(".rank-input").forEach(input=>{
+   const commit=()=>{
+     const id=Number(input.dataset.rankId);
+     const current=order.indexOf(id)+1;
+     const raw=input.value.trim();
+     if(!raw){
+       input.value=String(current);
+       return;
+     }
+     moveToRank(id,raw);
+   };
+
+   input.addEventListener("focus",()=>input.select());
+   input.addEventListener("pointerdown",e=>e.stopPropagation());
+   input.addEventListener("click",e=>e.stopPropagation());
+
+   input.addEventListener("keydown",e=>{
+     if(e.key==="Enter"){
+       e.preventDefault();
+       commit();
+     }else if(e.key==="Escape"){
+       e.preventDefault();
+       input.value=String(order.indexOf(Number(input.dataset.rankId))+1);
+       input.blur();
+     }
+   });
+
+   input.addEventListener("change",commit);
+ });
  bindDragHandles();
 }
 function move(id,d){const i=order.indexOf(Number(id)),j=i+d;if(j<0||j>=order.length)return;[order[i],order[j]]=[order[j],order[i]];save();render();requestAnimationFrame(()=>document.querySelector(`.song[data-id="${id}"]`)?.scrollIntoView({block:"nearest"}))}
+function moveToRank(id,requestedRank){
+  const songId=Number(id);
+  const from=order.indexOf(songId);
+  if(from<0)return;
+
+  let rank=parseInt(requestedRank,10);
+  if(!Number.isFinite(rank))return;
+
+  rank=Math.max(1,Math.min(order.length,rank));
+  const targetIndex=rank-1;
+
+  if(from===targetIndex){
+    const input=document.querySelector(`.rank-input[data-rank-id="${songId}"]`);
+    if(input)input.value=String(rank);
+    return;
+  }
+
+  const [item]=order.splice(from,1);
+  order.splice(targetIndex,0,item);
+
+  save();
+  render();
+
+  requestAnimationFrame(()=>{
+    const row=document.querySelector(`.song[data-id="${songId}"]`);
+    row?.scrollIntoView({block:"nearest",behavior:"smooth"});
+    const input=row?.querySelector(".rank-input");
+    input?.focus({preventScroll:true});
+    input?.select();
+  });
+}
+
 function reorder(fromId,toId){
  const from=order.indexOf(Number(fromId)),to=order.indexOf(Number(toId));if(from<0||to<0||from===to)return;
  const [x]=order.splice(from,1);order.splice(to,0,x);save();render()
