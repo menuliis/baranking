@@ -81,69 +81,30 @@ body.reordering *{cursor:grabbing!important}
 @media(max-width:410px){h1{font-size:50px}.song{grid-template-columns:34px 54px minmax(0,1fr);gap:7px}.cover{width:54px;height:54px}.actions{gap:4px}.move,.drag-handle,.brand{height:40px;min-width:40px}}
 
 
-.spotify-controller-clip{
+
+
+
+.spotify-audio-shell{
   position:fixed!important;
-  left:-10000px!important;
-  top:-10000px!important;
+  left:-99999px!important;
+  top:-99999px!important;
   width:1px!important;
   height:1px!important;
   overflow:hidden!important;
+  clip-path:inset(100%)!important;
   opacity:0!important;
-  visibility:hidden!important;
   pointer-events:none!important;
+  z-index:-1!important;
 }
-.spotify-controller-host{
+.spotify-audio-shell iframe,
+.spotify-audio-shell > *{
   width:320px!important;
   height:152px!important;
-  overflow:hidden!important;
-}
-.spotify-controller-clip iframe,
-.spotify-controller-clip > *{
-  margin:0!important;
+  min-width:320px!important;
   max-width:none!important;
-}
-
-.spotify-backdrop{
-  display:none;position:fixed;inset:0;z-index:190;
-  background:rgba(0,0,0,.72);backdrop-filter:blur(12px);
-  align-items:flex-end;justify-content:center;padding:12px
-}
-.spotify-backdrop.show{display:flex}
-.spotify-sheet{
-  width:min(520px,100%);background:#111318;border:1px solid var(--line2);
-  border-radius:21px;padding:14px;box-shadow:0 30px 100px rgba(0,0,0,.58)
-}
-.spotify-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
-.spotify-head-copy{min-width:0}
-.spotify-head-copy b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.spotify-head-copy span{display:block;color:var(--muted);font-size:11px;margin-top:3px}
-.spotify-embed{width:100%;height:152px;border:0;border-radius:12px;background:#121212}
-@media(max-width:760px){
-  
-.spotify-controller-clip{
-  position:fixed!important;
-  left:-10000px!important;
-  top:-10000px!important;
-  width:1px!important;
-  height:1px!important;
-  overflow:hidden!important;
-  opacity:0!important;
-  visibility:hidden!important;
-  pointer-events:none!important;
-}
-.spotify-controller-host{
-  width:320px!important;
-  height:152px!important;
-  overflow:hidden!important;
-}
-.spotify-controller-clip iframe,
-.spotify-controller-clip > *{
   margin:0!important;
-  max-width:none!important;
-}
-
-.spotify-backdrop{padding:7px}
-  .spotify-sheet{border-radius:20px 20px 10px 10px}
+  padding:0!important;
+  border:0!important;
 }
 
 </style>
@@ -160,22 +121,6 @@ body.reordering *{cursor:grabbing!important}
 
 <div class="export-backdrop" id="exportModal"><div class="export-sheet"><div class="preview-head"><div class="preview-copy"><b>Final ranking</b><span>Export the complete list</span></div><button class="close" id="exportClose">×</button></div><div class="export-preview" id="exportPreview"></div><div class="export-actions"><button class="btn primary" id="png">Download image</button><button class="btn" id="copy">Copy text</button><button class="btn" id="csv">Download CSV</button><button class="btn" id="modalShare">Copy share link</button></div></div></div>
 
-<div class="spotify-backdrop" id="spotifyModal">
-  <div class="spotify-sheet">
-    <div class="spotify-head">
-      <div class="spotify-head-copy">
-        <b id="spotifyTitle"></b>
-        <span>Spotify preview</span>
-      </div>
-      <button class="close" id="spotifyClose" aria-label="Close">×</button>
-    </div>
-    <iframe
-      id="spotifyFrame"
-      class="spotify-embed"
-      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-      loading="eager"></iframe>
-  </div>
-</div>
 
 <div class="toast" id="toast"></div>
 
@@ -198,8 +143,8 @@ const SPOTIFY_ARTWORK_OVERRIDES={
 
 
 const SONGS=[{"id":0,"title":"Be tylos","release":"Raktas","year":2013,"artist":"ba.","alt":false,"search":"ba. Be tylos","dateHint":"2013-05-10"},{"id":1,"title":"Spaudžia iš aplink laisvė iš vidaus","release":"Raktas","year":2013,"artist":"ba.","alt":false,"search":"ba. Spaudžia iš aplink laisvė iš vidaus","dateHint":"2013-05-10"},{"id":2,"title":"Tai ne žmogus","release":"Raktas","year":2013,"artist":"ba.","alt":false,"search":"ba. Tai ne žmogus","dateHint":"2013-05-10"},{"id":3,"title":"Tu jauti / lieti","release":"Raktas","year":2013,"artist":"ba.","alt":false,"search":"ba. Tu jauti / lieti","dateHint":"2013-05-10"},{"id":4,"title":"Raktas","release":"Raktas","year":2013,"artist":"ba.","alt":false,"search":"ba. Raktas","dateHint":"2013-05-10"},{"id":5,"title":"Aš pats esi","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Aš pats esi","dateHint":"2015-02-23"},{"id":6,"title":"Naktį judu","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Naktį judu","dateHint":"2015-02-23"},{"id":7,"title":"Jaučiu / pavėsių aidų","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Jaučiu / pavėsių aidų","dateHint":"2015-02-23"},{"id":8,"title":"Į mane","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Į mane","dateHint":"2015-02-23"},{"id":9,"title":"Kodėl tu toks aš","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Kodėl tu toks aš","dateHint":"2015-02-23"},{"id":10,"title":"Klaidos","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Klaidos","dateHint":"2015-02-23"},{"id":11,"title":"Ar sau tiesą sakai","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Ar sau tiesą sakai","dateHint":"2015-02-23"},{"id":12,"title":"Juodaesi","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Juodaesi","dateHint":"2015-02-23"},{"id":13,"title":"Rasti / Pasiklysti","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Rasti / Pasiklysti","dateHint":"2015-02-23"},{"id":14,"title":"Juda kojos / jauti","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Juda kojos / jauti","dateHint":"2015-02-23"},{"id":16,"title":"Sugebėt pasikeist - Bonus Track","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":true,"search":"ba. Sugebėt pasikeist - Bonus Track","dateHint":"2015-02-23"},{"id":17,"title":"Kūną palikai / atsibudai","release":"Saulėsužtemimas","year":2016,"artist":"ba.","alt":false,"search":"ba. Kūną palikai / atsibudai","dateHint":"2016-01-01"},{"id":18,"title":"Byru iš lėto","release":"Saulėsužtemimas","year":2016,"artist":"ba.","alt":false,"search":"ba. Byru iš lėto","dateHint":"2016-01-01"},{"id":19,"title":"Saulėsužtemimas","release":"Saulėsužtemimas","year":2016,"artist":"ba.","alt":false,"search":"ba. Saulėsužtemimas","dateHint":"2016-01-01"},{"id":20,"title":"Auka","release":"Garsiai Mąstau","year":2017,"artist":"ba.","alt":false,"search":"ba. Auka","dateHint":"2017-01-01"},{"id":21,"title":"Sapne / Patalpoje","release":"Garsiai Mąstau","year":2017,"artist":"ba.","alt":false,"search":"ba. Sapne / Patalpoje","dateHint":"2017-01-01"},{"id":22,"title":"Vaikai²","release":"Garsiai Mąstau","year":2017,"artist":"ba.","alt":false,"search":"ba. Vaikai²","dateHint":"2017-01-01"},{"id":23,"title":"L2","release":"Garsiai Mąstau","year":2017,"artist":"ba.","alt":false,"search":"ba. L2","dateHint":"2017-01-01"},{"id":75,"title":"Paprastu Instinktu Gyvenu","release":"Single","year":2017,"artist":"ba. feat. Despotin Fam","alt":false,"search":"ba. feat. Despotin Fam Paprastu Instinktu Gyvenu","dateHint":"2017-12-31"},{"id":76,"title":"Pati kalta","release":"Single","year":2017,"artist":"ba.","alt":false,"search":"ba. Pati kalta","dateHint":"2017-12-31"},{"id":78,"title":"Randai=veiksmai","release":"Single","year":2018,"artist":"ba.","alt":false,"search":"ba. Randai=veiksmai","dateHint":"2018-12-31"},{"id":24,"title":"Atsiprashow","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Atsiprashow","dateHint":"2019-01-01"},{"id":25,"title":"Akli Vagiai","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Akli Vagiai","dateHint":"2019-01-01"},{"id":26,"title":"Savo","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Savo","dateHint":"2019-01-01"},{"id":27,"title":"Iliuzija","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Iliuzija","dateHint":"2019-01-01"},{"id":28,"title":"Ramunė pt.1","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Ramunė pt.1","dateHint":"2019-01-01"},{"id":29,"title":"Ramunė pt.2","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Ramunė pt.2","dateHint":"2019-01-01"},{"id":30,"title":"Antisentimentalus","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Antisentimentalus","dateHint":"2019-01-01"},{"id":31,"title":"Hirudinea","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Hirudinea","dateHint":"2019-01-01"},{"id":32,"title":"Išnara","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Išnara","dateHint":"2019-01-01"},{"id":33,"title":"Outro","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Outro","dateHint":"2019-01-01"},{"id":57,"title":"Trenk","release":"Single","year":2020,"artist":"ba.","alt":false,"search":"ba. Trenk","dateHint":"2020-12-31"},{"id":54,"title":"Vitrina","release":"Single","year":2021,"artist":"ba.","alt":false,"search":"ba. Vitrina","dateHint":"2021-12-31"},{"id":55,"title":"Pilnatis","release":"Single","year":2021,"artist":"ba.","alt":false,"search":"ba. Pilnatis","dateHint":"2021-12-31"},{"id":56,"title":"Paralyžius","release":"Single","year":2021,"artist":"ba.","alt":false,"search":"ba. Paralyžius","dateHint":"2021-12-31"},{"id":34,"title":"NUOGAS NERVAS","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. NUOGAS NERVAS","dateHint":"2022-09-30"},{"id":35,"title":"FONAS","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. FONAS","dateHint":"2022-09-30"},{"id":36,"title":"PAŽADAI","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. PAŽADAI","dateHint":"2022-09-30"},{"id":37,"title":"TRŪNO KIAURAI","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. TRŪNO KIAURAI","dateHint":"2022-09-30"},{"id":38,"title":"PURVO GERKLE","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. PURVO GERKLE","dateHint":"2022-09-30"},{"id":39,"title":"IŠ NAUJO","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. IŠ NAUJO","dateHint":"2022-09-30"},{"id":40,"title":"SKĘSTAM","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. SKĘSTAM","dateHint":"2022-09-30"},{"id":41,"title":"LINIJA","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. LINIJA","dateHint":"2022-09-30"},{"id":42,"title":"PRARADAU MINTIS","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. PRARADAU MINTIS","dateHint":"2022-09-30"},{"id":43,"title":"ŠOKIS","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. ŠOKIS","dateHint":"2022-09-30"},{"id":60,"title":"Žodžiai","release":"Single","year":2023,"artist":"Gintariniai Laikai & ba.","alt":false,"search":"Gintariniai Laikai & ba. Žodžiai","dateHint":"2023-12-31"},{"id":44,"title":"Veidas","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Veidas","dateHint":"2024-12-09"},{"id":45,"title":"VHS","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. VHS","dateHint":"2024-12-09"},{"id":46,"title":"Kiek Dar Vargo","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Kiek Dar Vargo","dateHint":"2024-12-09"},{"id":47,"title":"Silpti Naudoje","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Silpti Naudoje","dateHint":"2024-12-09"},{"id":48,"title":"Kultas","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Kultas","dateHint":"2024-12-09"},{"id":49,"title":"Lėlė","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Lėlė","dateHint":"2024-12-09"},{"id":50,"title":"Istorija","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Istorija","dateHint":"2024-12-09"},{"id":51,"title":"Atleisk Man","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Atleisk Man","dateHint":"2024-12-09"},{"id":52,"title":"Atidavei","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Atidavei","dateHint":"2024-12-09"},{"id":53,"title":"Pastovi","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Pastovi","dateHint":"2024-12-09"},{"id":77,"title":"LAIKAI MANE","release":"Single","year":2024,"artist":"ba.","alt":false,"search":"ba. LAIKAI MANE","dateHint":"2024-12-31"},{"id":61,"title":"DRUGIO EFEKTAS","release":"Single/feature","year":2025,"artist":"Angelou & ba.","alt":false,"search":"Angelou & ba. DRUGIO EFEKTAS","dateHint":"2025-12-31"},{"id":62,"title":"Skandalas","release":"Single/feature","year":2025,"artist":"Requiem feat. ba.","alt":false,"search":"Requiem feat. ba. Skandalas","dateHint":"2025-12-31"},{"id":74,"title":"NUODAI","release":"JV2026","year":2026,"artist":"ba. feat. solo ansamblis","alt":false,"search":"ba. feat. solo ansamblis NUODAI","dateHint":"2026-05-21"},{"id":64,"title":"5K. PAROJE","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. 5K. PAROJE","dateHint":"2026-06-14"},{"id":65,"title":"APMAUDU","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. APMAUDU","dateHint":"2026-06-14"},{"id":66,"title":"(PA)LAIKAI MANE","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. (PA)LAIKAI MANE","dateHint":"2026-06-14"},{"id":67,"title":"VIENĄ DIENĄ","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. VIENĄ DIENĄ","dateHint":"2026-06-14"},{"id":68,"title":"KLOJA KLOJA","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. KLOJA KLOJA","dateHint":"2026-06-14"},{"id":69,"title":"AŠ SUGRĮŠIU","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. AŠ SUGRĮŠIU","dateHint":"2026-06-14"},{"id":70,"title":"DULKĖS","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. DULKĖS","dateHint":"2026-06-14"},{"id":71,"title":"PADĖTIS","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. PADĖTIS","dateHint":"2026-06-14"},{"id":72,"title":"JDS","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. JDS","dateHint":"2026-06-14"},{"id":73,"title":"OUTRO","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. OUTRO","dateHint":"2026-06-14"},{"id":63,"title":"Nidos daina","release":"Single/feature","year":2026,"artist":"Nidos daina & ba.","alt":false,"search":"Nidos daina & ba. Nidos daina","dateHint":"2026-12-31"}];
-const KEY="ba-ranking-v11";
-let media=new Map(), order=SONG_IDS(), currentAudio=null, currentSongId=null, currentSource=null, dragState=null, spotifyControllers=new Map(), spotifyApiReady=false;
+const KEY="ba-ranking-v13";
+let media=new Map(), order=SONG_IDS(), currentAudio=null, currentSongId=null, currentSource=null, dragState=null, spotifyController=null, spotifyReady=false, spotifyLoadedSongId=null;
 function SONG_IDS(){return SONGS.map(s=>s.id)}
 const $=q=>document.querySelector(q), byId=id=>SONGS.find(s=>s.id===Number(id));
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -326,11 +271,6 @@ function clearCoverStates(){
   document.querySelectorAll(".cover.playing,.cover.loading").forEach(x=>x.classList.remove("playing","loading"));
 }
 
-function closeSpotifyPopup(){
-  $("#spotifyModal").classList.remove("show");
-  $("#spotifyFrame").src="about:blank";
-}
-
 function stopApplePreview(){
   if(currentAudio){
     currentAudio.pause();
@@ -340,77 +280,65 @@ function stopApplePreview(){
   currentAudio=null;
 }
 
-function pauseAllSpotify(){
-  spotifyControllers.forEach(controller=>{
-    try{controller.pause()}catch(_){}
-  });
+function stopSpotifyPreview(){
+  if(spotifyController){
+    try{spotifyController.pause()}catch(_){}
+  }
 }
 
 function stopPreview(){
   stopApplePreview();
-  pauseAllSpotify();
+  stopSpotifyPreview();
   clearCoverStates();
   currentSongId=null;
   currentSource=null;
 }
 
-function markSpotifyPlaying(songId,isPlaying){
+function markPlaying(songId,on){
   const cover=document.querySelector(`.song[data-id="${songId}"] .cover`);
   if(!cover)return;
   cover.classList.remove("loading");
-  cover.classList.toggle("playing",!!isPlaying);
+  cover.classList.toggle("playing",!!on);
 }
 
-function openSpotifyPopup(song){
-  const src=spotifyEmbedUrl(song);
-  if(!src){
-    toast("No preview available for this song");
-    return;
-  }
-  stopPreview();
-  $("#spotifyTitle").textContent=song.title;
-  $("#spotifyFrame").src=src;
-  $("#spotifyModal").classList.add("show");
-}
-
-function tryInlineSpotify(song,cover){
-  const controller=spotifyControllers.get(song.id);
-  if(!controller)return false;
+function playSpotifyInvisible(song,cover){
+  const cfg=SPOTIFY_TRACK_OVERRIDES[song.id];
+  if(!cfg || !spotifyController || !spotifyReady)return false;
 
   stopApplePreview();
-  pauseAllSpotify();
+  stopSpotifyPreview();
   clearCoverStates();
 
   currentSongId=song.id;
   currentSource="spotify";
   cover?.classList.add("loading");
 
-  let started=false;
-  let fallbackTimer=setTimeout(()=>{
-    if(currentSongId===song.id && currentSource==="spotify" && !started){
-      currentSongId=null;
-      currentSource=null;
-      cover?.classList.remove("loading","playing");
-      openSpotifyPopup(song);
-    }
-  },1400);
-
-  const onUpdate=event=>{
-    if(currentSongId!==song.id || currentSource!=="spotify")return;
-    const paused=!!event?.data?.isPaused;
-    if(!paused){
-      started=true;
-      clearTimeout(fallbackTimer);
-      markSpotifyPlaying(song.id,true);
-    }
-  };
-
   try{
-    controller.addListener?.("playback_update",onUpdate);
-    controller.play();
+    const uri=`spotify:track:${cfg.trackId}`;
+
+    if(spotifyLoadedSongId!==song.id){
+      spotifyController.loadEntity(uri);
+      spotifyLoadedSongId=song.id;
+
+      // loadEntity is asynchronous. The IFrame API still receives this from
+      // the same user gesture; play immediately, then retry once on ready/update.
+      spotifyController.play();
+
+      let retries=0;
+      const retry=()=>{
+        if(currentSongId!==song.id || currentSource!=="spotify")return;
+        retries+=1;
+        try{spotifyController.play()}catch(_){}
+        if(retries<3)setTimeout(retry,180);
+      };
+      setTimeout(retry,120);
+    }else{
+      spotifyController.togglePlay();
+    }
+
     return true;
   }catch(err){
-    clearTimeout(fallbackTimer);
+    console.warn("Invisible Spotify playback failed",err);
     currentSongId=null;
     currentSource=null;
     cover?.classList.remove("loading","playing");
@@ -419,21 +347,18 @@ function tryInlineSpotify(song,cover){
 }
 
 async function togglePreview(song,cover){
-  // Same song = stop, regardless of whether Apple or Spotify is playing it.
+  // Same song: stop.
   if(currentSongId===song.id){
     stopPreview();
     return;
   }
 
-  closeSpotifyPopup();
   stopPreview();
-
   const m=media.get(song.id);
 
-  // Prefer Apple's direct preview whenever available.
+  // Apple direct preview remains the preferred path.
   if(m?.preview){
     cover.classList.add("loading");
-
     const audio=new Audio();
     audio.preload="auto";
     audio.src=m.preview;
@@ -455,7 +380,7 @@ async function togglePreview(song,cover){
       if(currentAudio!==audio)return;
       stopPreview();
       if(SPOTIFY_TRACK_OVERRIDES[song.id]){
-        if(!tryInlineSpotify(song,cover))openSpotifyPopup(song);
+        if(!playSpotifyInvisible(song,cover))toast("Spotify preview is not ready yet");
       }else{
         toast("Preview could not be played");
       }
@@ -471,7 +396,7 @@ async function togglePreview(song,cover){
     }catch(err){
       if(currentAudio===audio)stopPreview();
       if(SPOTIFY_TRACK_OVERRIDES[song.id]){
-        if(!tryInlineSpotify(song,cover))openSpotifyPopup(song);
+        if(!playSpotifyInvisible(song,cover))toast("Spotify preview is not ready yet");
       }else{
         toast("Preview could not start");
       }
@@ -479,59 +404,65 @@ async function togglePreview(song,cover){
     }
   }
 
-  // Spotify-only fallback: preloaded controller means this runs from the
-  // original artwork click, which gives browsers the best chance to allow it.
+  // Spotify-only tracks: fully invisible player, no popup.
   if(SPOTIFY_TRACK_OVERRIDES[song.id]){
-    if(!tryInlineSpotify(song,cover))openSpotifyPopup(song);
+    if(!playSpotifyInvisible(song,cover)){
+      toast(spotifyReady ? "Spotify preview could not start" : "Spotify preview is loading — tap again");
+    }
     return;
   }
 
   toast("No audio preview available for this song");
 }
 
-function setupSpotifyControllers(IFrameAPI){
-  spotifyApiReady=true;
+function setupSpotifyController(IFrameAPI){
+  const shell=document.createElement("div");
+  shell.className="spotify-audio-shell";
+  shell.setAttribute("aria-hidden","true");
 
-  Object.entries(SPOTIFY_TRACK_OVERRIDES).forEach(([songIdRaw,cfg])=>{
-    const songId=Number(songIdRaw);
-    if(spotifyControllers.has(songId))return;
+  const host=document.createElement("div");
+  host.id="spotify-audio-host";
+  shell.appendChild(host);
+  document.body.appendChild(shell);
 
-    const wrapper=document.createElement("div");
-    wrapper.className="spotify-controller-clip";
-    wrapper.setAttribute("aria-hidden","true");
+  const first=Object.values(SPOTIFY_TRACK_OVERRIDES)[0];
+  if(!first)return;
 
-    const host=document.createElement("div");
-    host.className="spotify-controller-host";
-    host.id=`spotify-controller-${songId}`;
+  IFrameAPI.createController(
+    host,
+    {
+      width:320,
+      height:152,
+      uri:`spotify:track:${first.trackId}`
+    },
+    controller=>{
+      spotifyController=controller;
+      spotifyLoadedSongId=null;
 
-    wrapper.appendChild(host);
-    document.body.appendChild(wrapper);
+      controller.addListener?.("ready",()=>{
+        spotifyReady=true;
+      });
 
-    IFrameAPI.createController(
-      host,
-      {
-        width:320,
-        height:152,
-        uri:`spotify:track:${cfg.trackId}`
-      },
-      controller=>{
-        spotifyControllers.set(songId,controller);
+      controller.addListener?.("playback_started",event=>{
+        if(currentSource!=="spotify" || currentSongId==null)return;
+        markPlaying(currentSongId,true);
+      });
 
-        controller.addListener?.("playback_update",event=>{
-          if(currentSongId!==songId || currentSource!=="spotify")return;
-          const paused=!!event?.data?.isPaused;
-          if(paused){
-            markSpotifyPlaying(songId,false);
-          }else{
-            markSpotifyPlaying(songId,true);
-          }
-        });
-      }
-    );
-  });
+      controller.addListener?.("playback_update",event=>{
+        if(currentSource!=="spotify" || currentSongId==null)return;
+        const data=event?.data||{};
+        if(data.isBuffering){
+          const cover=document.querySelector(`.song[data-id="${currentSongId}"] .cover`);
+          cover?.classList.add("loading");
+          return;
+        }
+        markPlaying(currentSongId,!data.isPaused);
+      });
+    }
+  );
 }
 
-window.onSpotifyIframeApiReady=IFrameAPI=>setupSpotifyControllers(IFrameAPI);
+window.onSpotifyIframeApiReady=IFrameAPI=>setupSpotifyController(IFrameAPI);
 
 function getRowAtPoint(x,y,excludeId){
   const els=document.elementsFromPoint(
@@ -722,10 +653,8 @@ function png(){
 }
 function reset(){if(confirm("Reset to chronological release order?")){stopPreview();order=[...SONGS].sort((a,b)=>{const da=media.get(a.id)?.date||a.dateHint,db=media.get(b.id)?.date||b.dateHint;return da.localeCompare(db)||a.id-b.id}).map(s=>s.id);save();location.hash="";render()}}
 $("#search").oninput=render;$("#share").onclick=$("#mobileShare").onclick=$("#modalShare").onclick=copyShare;$("#reset").onclick=reset;$("#export").onclick=$("#mobileExport").onclick=openExport;$("#exportClose").onclick=closeExport;$("#copy").onclick=copyText;$("#csv").onclick=csv;$("#png").onclick=png;
-$("#exportModal").onclick=e=>{if(e.target.id==="exportModal")closeExport()};document.onkeydown=e=>{if(e.key==="Escape"){stopPreview();closeSpotifyPopup();cleanupDrag();closeExport()}};
+$("#exportModal").onclick=e=>{if(e.target.id==="exportModal")closeExport()};document.onkeydown=e=>{if(e.key==="Escape"){stopPreview();cleanupDrag();closeExport()}};
 
-$("#spotifyClose").onclick=()=>{closeSpotifyPopup();stopPreview()};
-$("#spotifyModal").onclick=e=>{if(e.target.id==="spotifyModal"){closeSpotifyPopup();stopPreview()}};
 load();render();hydrateCatalogue();
 </script>
 <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
