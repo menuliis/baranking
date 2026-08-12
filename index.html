@@ -63,6 +63,17 @@ body.reordering *{cursor:grabbing!important}
 .brand svg{width:18px;height:18px;display:block}.brand.spotify:hover{border-color:#1ed760}.brand.apple:hover{border-color:#aaa}
 .brand.disabled{opacity:.25;pointer-events:none}
 .loader{position:absolute;inset:0;display:grid;place-items:center;background:linear-gradient(145deg,#242933,#101216);font-size:9px;color:var(--muted);font-weight:800}
+.spotify-offscreen{
+  position:fixed!important;
+  left:-10000px!important;
+  top:-10000px!important;
+  width:300px!important;
+  height:80px!important;
+  overflow:hidden!important;
+  opacity:.01!important;
+  pointer-events:none!important;
+}
+
 .export-backdrop{display:none;position:fixed;inset:0;z-index:160;background:rgba(0,0,0,.72);backdrop-filter:blur(12px);align-items:flex-end;justify-content:center;padding:12px}.export-backdrop.show{display:flex}
 .export-sheet{width:min(720px,100%);max-height:85vh;overflow:auto;background:#111318;border:1px solid var(--line2);border-radius:21px;padding:15px}
 .export-preview{background:#f2efe6;color:#111214;border-radius:16px;padding:22px}.export-preview h2{font-size:38px;line-height:.92;letter-spacing:-.055em;margin:7px 0 17px}.export-row{display:grid;grid-template-columns:34px 1fr;gap:10px;padding:7px 0;border-top:1px solid rgba(0,0,0,.12);font-size:12px;font-weight:750}
@@ -95,14 +106,25 @@ body.reordering *{cursor:grabbing!important}
 
 <script>
 const APPLE_ARTIST_ID="1208362498";
+const APPLE_TRACK_OVERRIDES={
+  22:{trackId:"1208362503",country:"lt",link:"https://music.apple.com/lt/song/vaikai/1208362503"},
+  60:{trackId:"1697158425",country:"us",link:"https://music.apple.com/us/album/%C5%BEod%C5%BEiai-single/1697158412"},
+  77:{trackId:"1728490305",country:"us",link:"https://music.apple.com/us/song/laikai-mane/1728490305"}
+};
+const SPOTIFY_TRACK_OVERRIDES={
+  75:{trackId:"42HkG1EDzdeGislL2PECz2",link:"https://open.spotify.com/track/42HkG1EDzdeGislL2PECz2"},
+  76:{trackId:"1NkqeapycDlPjOrCuebCmj",link:"https://open.spotify.com/track/1NkqeapycDlPjOrCuebCmj"}
+};
+
 const SONGS=[{"id":0,"title":"Be tylos","release":"Raktas","year":2013,"artist":"ba.","alt":false,"search":"ba. Be tylos","dateHint":"2013-05-10"},{"id":1,"title":"Spaudžia iš aplink laisvė iš vidaus","release":"Raktas","year":2013,"artist":"ba.","alt":false,"search":"ba. Spaudžia iš aplink laisvė iš vidaus","dateHint":"2013-05-10"},{"id":2,"title":"Tai ne žmogus","release":"Raktas","year":2013,"artist":"ba.","alt":false,"search":"ba. Tai ne žmogus","dateHint":"2013-05-10"},{"id":3,"title":"Tu jauti / lieti","release":"Raktas","year":2013,"artist":"ba.","alt":false,"search":"ba. Tu jauti / lieti","dateHint":"2013-05-10"},{"id":4,"title":"Raktas","release":"Raktas","year":2013,"artist":"ba.","alt":false,"search":"ba. Raktas","dateHint":"2013-05-10"},{"id":5,"title":"Aš pats esi","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Aš pats esi","dateHint":"2015-02-23"},{"id":6,"title":"Naktį judu","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Naktį judu","dateHint":"2015-02-23"},{"id":7,"title":"Jaučiu / pavėsių aidų","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Jaučiu / pavėsių aidų","dateHint":"2015-02-23"},{"id":8,"title":"Į mane","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Į mane","dateHint":"2015-02-23"},{"id":9,"title":"Kodėl tu toks aš","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Kodėl tu toks aš","dateHint":"2015-02-23"},{"id":10,"title":"Klaidos","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Klaidos","dateHint":"2015-02-23"},{"id":11,"title":"Ar sau tiesą sakai","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Ar sau tiesą sakai","dateHint":"2015-02-23"},{"id":12,"title":"Juodaesi","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Juodaesi","dateHint":"2015-02-23"},{"id":13,"title":"Rasti / Pasiklysti","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Rasti / Pasiklysti","dateHint":"2015-02-23"},{"id":14,"title":"Juda kojos / jauti","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Juda kojos / jauti","dateHint":"2015-02-23"},{"id":16,"title":"Sugebėt pasikeist - Bonus Track","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":true,"search":"ba. Sugebėt pasikeist - Bonus Track","dateHint":"2015-02-23"},{"id":17,"title":"Kūną palikai / atsibudai","release":"Saulėsužtemimas","year":2016,"artist":"ba.","alt":false,"search":"ba. Kūną palikai / atsibudai","dateHint":"2016-01-01"},{"id":18,"title":"Byru iš lėto","release":"Saulėsužtemimas","year":2016,"artist":"ba.","alt":false,"search":"ba. Byru iš lėto","dateHint":"2016-01-01"},{"id":19,"title":"Saulėsužtemimas","release":"Saulėsužtemimas","year":2016,"artist":"ba.","alt":false,"search":"ba. Saulėsužtemimas","dateHint":"2016-01-01"},{"id":20,"title":"Auka","release":"Garsiai Mąstau","year":2017,"artist":"ba.","alt":false,"search":"ba. Auka","dateHint":"2017-01-01"},{"id":21,"title":"Sapne / Patalpoje","release":"Garsiai Mąstau","year":2017,"artist":"ba.","alt":false,"search":"ba. Sapne / Patalpoje","dateHint":"2017-01-01"},{"id":22,"title":"Vaikai²","release":"Garsiai Mąstau","year":2017,"artist":"ba.","alt":false,"search":"ba. Vaikai²","dateHint":"2017-01-01"},{"id":23,"title":"L2","release":"Garsiai Mąstau","year":2017,"artist":"ba.","alt":false,"search":"ba. L2","dateHint":"2017-01-01"},{"id":75,"title":"Paprastu Instinktu Gyvenu","release":"Single","year":2017,"artist":"ba. feat. Despotin Fam","alt":false,"search":"ba. feat. Despotin Fam Paprastu Instinktu Gyvenu","dateHint":"2017-12-31"},{"id":76,"title":"Pati kalta","release":"Single","year":2017,"artist":"ba.","alt":false,"search":"ba. Pati kalta","dateHint":"2017-12-31"},{"id":78,"title":"Randai=veiksmai","release":"Single","year":2018,"artist":"ba.","alt":false,"search":"ba. Randai=veiksmai","dateHint":"2018-12-31"},{"id":24,"title":"Atsiprashow","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Atsiprashow","dateHint":"2019-01-01"},{"id":25,"title":"Akli Vagiai","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Akli Vagiai","dateHint":"2019-01-01"},{"id":26,"title":"Savo","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Savo","dateHint":"2019-01-01"},{"id":27,"title":"Iliuzija","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Iliuzija","dateHint":"2019-01-01"},{"id":28,"title":"Ramunė pt.1","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Ramunė pt.1","dateHint":"2019-01-01"},{"id":29,"title":"Ramunė pt.2","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Ramunė pt.2","dateHint":"2019-01-01"},{"id":30,"title":"Antisentimentalus","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Antisentimentalus","dateHint":"2019-01-01"},{"id":31,"title":"Hirudinea","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Hirudinea","dateHint":"2019-01-01"},{"id":32,"title":"Išnara","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Išnara","dateHint":"2019-01-01"},{"id":33,"title":"Outro","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Outro","dateHint":"2019-01-01"},{"id":57,"title":"Trenk","release":"Single","year":2020,"artist":"ba.","alt":false,"search":"ba. Trenk","dateHint":"2020-12-31"},{"id":54,"title":"Vitrina","release":"Single","year":2021,"artist":"ba.","alt":false,"search":"ba. Vitrina","dateHint":"2021-12-31"},{"id":55,"title":"Pilnatis","release":"Single","year":2021,"artist":"ba.","alt":false,"search":"ba. Pilnatis","dateHint":"2021-12-31"},{"id":56,"title":"Paralyžius","release":"Single","year":2021,"artist":"ba.","alt":false,"search":"ba. Paralyžius","dateHint":"2021-12-31"},{"id":34,"title":"NUOGAS NERVAS","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. NUOGAS NERVAS","dateHint":"2022-09-30"},{"id":35,"title":"FONAS","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. FONAS","dateHint":"2022-09-30"},{"id":36,"title":"PAŽADAI","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. PAŽADAI","dateHint":"2022-09-30"},{"id":37,"title":"TRŪNO KIAURAI","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. TRŪNO KIAURAI","dateHint":"2022-09-30"},{"id":38,"title":"PURVO GERKLE","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. PURVO GERKLE","dateHint":"2022-09-30"},{"id":39,"title":"IŠ NAUJO","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. IŠ NAUJO","dateHint":"2022-09-30"},{"id":40,"title":"SKĘSTAM","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. SKĘSTAM","dateHint":"2022-09-30"},{"id":41,"title":"LINIJA","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. LINIJA","dateHint":"2022-09-30"},{"id":42,"title":"PRARADAU MINTIS","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. PRARADAU MINTIS","dateHint":"2022-09-30"},{"id":43,"title":"ŠOKIS","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. ŠOKIS","dateHint":"2022-09-30"},{"id":60,"title":"Žodžiai","release":"Single","year":2023,"artist":"Gintariniai Laikai & ba.","alt":false,"search":"Gintariniai Laikai & ba. Žodžiai","dateHint":"2023-12-31"},{"id":44,"title":"Veidas","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Veidas","dateHint":"2024-12-09"},{"id":45,"title":"VHS","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. VHS","dateHint":"2024-12-09"},{"id":46,"title":"Kiek Dar Vargo","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Kiek Dar Vargo","dateHint":"2024-12-09"},{"id":47,"title":"Silpti Naudoje","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Silpti Naudoje","dateHint":"2024-12-09"},{"id":48,"title":"Kultas","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Kultas","dateHint":"2024-12-09"},{"id":49,"title":"Lėlė","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Lėlė","dateHint":"2024-12-09"},{"id":50,"title":"Istorija","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Istorija","dateHint":"2024-12-09"},{"id":51,"title":"Atleisk Man","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Atleisk Man","dateHint":"2024-12-09"},{"id":52,"title":"Atidavei","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Atidavei","dateHint":"2024-12-09"},{"id":53,"title":"Pastovi","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Pastovi","dateHint":"2024-12-09"},{"id":77,"title":"LAIKAI MANE","release":"Single","year":2024,"artist":"ba.","alt":false,"search":"ba. LAIKAI MANE","dateHint":"2024-12-31"},{"id":61,"title":"DRUGIO EFEKTAS","release":"Single/feature","year":2025,"artist":"Angelou & ba.","alt":false,"search":"Angelou & ba. DRUGIO EFEKTAS","dateHint":"2025-12-31"},{"id":62,"title":"Skandalas","release":"Single/feature","year":2025,"artist":"Requiem feat. ba.","alt":false,"search":"Requiem feat. ba. Skandalas","dateHint":"2025-12-31"},{"id":74,"title":"NUODAI","release":"JV2026","year":2026,"artist":"ba. feat. solo ansamblis","alt":false,"search":"ba. feat. solo ansamblis NUODAI","dateHint":"2026-05-21"},{"id":64,"title":"5K. PAROJE","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. 5K. PAROJE","dateHint":"2026-06-14"},{"id":65,"title":"APMAUDU","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. APMAUDU","dateHint":"2026-06-14"},{"id":66,"title":"(PA)LAIKAI MANE","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. (PA)LAIKAI MANE","dateHint":"2026-06-14"},{"id":67,"title":"VIENĄ DIENĄ","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. VIENĄ DIENĄ","dateHint":"2026-06-14"},{"id":68,"title":"KLOJA KLOJA","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. KLOJA KLOJA","dateHint":"2026-06-14"},{"id":69,"title":"AŠ SUGRĮŠIU","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. AŠ SUGRĮŠIU","dateHint":"2026-06-14"},{"id":70,"title":"DULKĖS","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. DULKĖS","dateHint":"2026-06-14"},{"id":71,"title":"PADĖTIS","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. PADĖTIS","dateHint":"2026-06-14"},{"id":72,"title":"JDS","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. JDS","dateHint":"2026-06-14"},{"id":73,"title":"OUTRO","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. OUTRO","dateHint":"2026-06-14"},{"id":63,"title":"Nidos daina","release":"Single/feature","year":2026,"artist":"Nidos daina & ba.","alt":false,"search":"Nidos daina & ba. Nidos daina","dateHint":"2026-12-31"}];
-const KEY="ba-ranking-v6";
-let media=new Map(), order=SONG_IDS(), currentAudio=null, currentSongId=null, dragState=null;
+const KEY="ba-ranking-v8";
+let media=new Map(), order=SONG_IDS(), currentAudio=null, currentSongId=null, currentSource=null, dragState=null, spotifyControllers=new Map(), spotifyApiReady=false, spotifyPendingSongId=null;
 function SONG_IDS(){return SONGS.map(s=>s.id)}
 const $=q=>document.querySelector(q), byId=id=>SONGS.find(s=>s.id===Number(id));
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const norm=s=>String(s??"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[²]/g,"2").replace(/[^a-z0-9]+/g," ").trim();
 const spotifySearch=s=>"https://open.spotify.com/search/"+encodeURIComponent((s.artist||"ba.")+" "+s.title);
+function spotifyFor(song){return SPOTIFY_TRACK_OVERRIDES[song.id]?.link||spotifySearch(song)}
 
 function toast(x){const t=$("#toast");t.textContent=x;t.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("show"),1600)}
 function save(){localStorage.setItem(KEY,JSON.stringify(order))}
@@ -148,6 +170,22 @@ async function hydrateCatalogue(){
   const data=await jsonp("https://itunes.apple.com/lookup",{id:APPLE_ARTIST_ID,entity:"song",limit:"200",country:"US"});
   const rows=(data.results||[]).filter(x=>x.wrapperType==="track"&&x.kind==="song");
   SONGS.forEach(s=>{const x=chooseResult(s,rows);if(x)media.set(s.id,mediaObject(x))});
+
+  await Promise.all(Object.entries(APPLE_TRACK_OVERRIDES).map(async([songId,o])=>{
+    try{
+      const exact=await jsonp("https://itunes.apple.com/lookup",{id:o.trackId,entity:"song",country:o.country||"us"});
+      const x=(exact.results||[]).find(r=>r.wrapperType==="track"&&r.kind==="song"&&String(r.trackId)===String(o.trackId))
+        || (exact.results||[]).find(r=>r.wrapperType==="track"&&r.kind==="song");
+      if(x){
+        const mm=mediaObject(x);
+        mm.apple=o.link||mm.apple;
+        media.set(Number(songId),mm);
+      }
+    }catch(err){
+      console.warn("Exact Apple override failed",songId,err);
+    }
+  }));
+
   // Rebuild the canonical default using exact earliest Apple release dates where available.
   SONGS.sort((a,b)=>{
     const da=media.get(a.id)?.date||a.dateHint, db=media.get(b.id)?.date||b.dateHint;
@@ -165,8 +203,9 @@ function artFor(song){
  return m?.artwork||"";
 }
 function appleFor(song){
+ const exact=APPLE_TRACK_OVERRIDES[song.id]?.link;
  const m=media.get(song.id);
- return m?.apple||`https://music.apple.com/us/search?term=${encodeURIComponent((song.artist||"ba.")+" "+song.title)}`;
+ return exact||m?.apple||`https://music.apple.com/us/search?term=${encodeURIComponent((song.artist||"ba.")+" "+song.title)}`;
 }
 function displayDate(song){return media.get(song.id)?.date||song.dateHint||String(song.year)}
 function render(){
@@ -181,7 +220,7 @@ function render(){
    <div class="actions">
     <button class="move" data-action="up" aria-label="Move up" ${idx===0?"disabled":""}>↑</button>
     <button class="move" data-action="down" aria-label="Move down" ${idx===order.length-1?"disabled":""}>↓</button>
-    <a class="brand spotify" href="${spotifySearch(s)}" target="_blank" rel="noopener" aria-label="Spotify" title="Spotify"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1.75A10.25 10.25 0 1 0 12 22.25 10.25 10.25 0 0 0 12 1.75Zm4.7 14.79a.64.64 0 0 1-.88.21c-2.4-1.47-5.42-1.8-8.98-.99a.64.64 0 1 1-.28-1.25c3.9-.89 7.25-.51 9.93 1.13.3.18.4.58.21.9Zm1.25-2.78a.8.8 0 0 1-1.1.26c-2.75-1.69-6.94-2.18-10.2-1.19a.8.8 0 1 1-.47-1.53c3.72-1.13 8.34-.58 11.51 1.37.38.23.5.72.26 1.09Zm.1-2.9C14.76 8.9 9.3 8.72 6.16 9.67a.96.96 0 1 1-.56-1.84c3.61-1.1 9.65-.88 13.43 1.36a.96.96 0 0 1-.98 1.67Z"/></svg></a>
+    <a class="brand spotify" href="${spotifyFor(s)}" target="_blank" rel="noopener" aria-label="Spotify" title="Spotify"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1.75A10.25 10.25 0 1 0 12 22.25 10.25 10.25 0 0 0 12 1.75Zm4.7 14.79a.64.64 0 0 1-.88.21c-2.4-1.47-5.42-1.8-8.98-.99a.64.64 0 1 1-.28-1.25c3.9-.89 7.25-.51 9.93 1.13.3.18.4.58.21.9Zm1.25-2.78a.8.8 0 0 1-1.1.26c-2.75-1.69-6.94-2.18-10.2-1.19a.8.8 0 1 1-.47-1.53c3.72-1.13 8.34-.58 11.51 1.37.38.23.5.72.26 1.09Zm.1-2.9C14.76 8.9 9.3 8.72 6.16 9.67a.96.96 0 1 1-.56-1.84c3.61-1.1 9.65-.88 13.43 1.36a.96.96 0 0 1-.98 1.67Z"/></svg></a>
     <a class="brand apple" href="${esc(appleFor(s))}" target="_blank" rel="noopener" aria-label="Apple Music" title="Apple Music"><span style="font:700 23px -apple-system,BlinkMacSystemFont,sans-serif;line-height:1"></span></a>
     <button class="drag-handle" data-drag="${s.id}" aria-label="Drag to reorder" title="Drag">⠿</button>
    </div>`;
@@ -196,69 +235,173 @@ function reorder(fromId,toId){
  const [x]=order.splice(from,1);order.splice(to,0,x);save();render()
 }
 
+function clearCoverStates(){
+  document.querySelectorAll(".cover.playing,.cover.loading").forEach(x=>x.classList.remove("playing","loading"));
+}
+
 function stopPreview(){
   if(currentAudio){
     currentAudio.pause();
     currentAudio.currentTime=0;
     currentAudio.src="";
   }
-  document.querySelectorAll(".cover.playing,.cover.loading").forEach(x=>x.classList.remove("playing","loading"));
+  spotifyControllers.forEach(controller=>{
+    try{controller.pause()}catch(_){}
+  });
+  clearCoverStates();
   currentAudio=null;
   currentSongId=null;
+  currentSource=null;
+  spotifyPendingSongId=null;
+}
+
+function spotifyCover(songId){
+  return document.querySelector(`.song[data-id="${songId}"] .cover`);
+}
+
+function playSpotifyFallback(song,cover){
+  const cfg=SPOTIFY_TRACK_OVERRIDES[song.id];
+  if(!cfg)return false;
+
+  currentSongId=song.id;
+  currentSource="spotify";
+  cover?.classList.add("loading");
+
+  const controller=spotifyControllers.get(song.id);
+  if(controller){
+    try{
+      controller.play();
+      cover?.classList.remove("loading");
+      cover?.classList.add("playing");
+      return true;
+    }catch(e){
+      console.warn("Spotify play failed",e);
+    }
+  }
+
+  spotifyPendingSongId=song.id;
+  if(!spotifyApiReady) toast("Spotify preview is loading…");
+  return true;
 }
 
 async function togglePreview(song,cover){
-  const m=media.get(song.id);
-
-  if(currentSongId===song.id && currentAudio && !currentAudio.paused){
+  if(currentSongId===song.id){
     stopPreview();
     return;
   }
 
   stopPreview();
+  const m=media.get(song.id);
 
-  if(!m?.preview){
-    toast("No audio preview available for this song");
-    return;
-  }
+  if(m?.preview){
+    cover.classList.add("loading");
+    const audio=new Audio();
+    audio.preload="auto";
+    audio.src=m.preview;
+    currentAudio=audio;
+    currentSongId=song.id;
+    currentSource="apple";
 
-  cover.classList.add("loading");
-  const audio=new Audio();
-  audio.preload="auto";
-  audio.src=m.preview;
-  currentAudio=audio;
-  currentSongId=song.id;
-
-  audio.addEventListener("canplay",()=>{
-    if(currentAudio!==audio)return;
-    cover.classList.remove("loading");
-    cover.classList.add("playing");
-  },{once:true});
-
-  audio.addEventListener("ended",()=>{
-    if(currentAudio===audio)stopPreview();
-  },{once:true});
-
-  audio.addEventListener("error",()=>{
-    if(currentAudio===audio){
-      stopPreview();
-      toast("Preview could not be played");
-    }
-  },{once:true});
-
-  try{
-    await audio.play();
-    if(currentAudio===audio){
+    audio.addEventListener("canplay",()=>{
+      if(currentAudio!==audio)return;
       cover.classList.remove("loading");
       cover.classList.add("playing");
-    }
-  }catch(e){
-    if(currentAudio===audio){
-      stopPreview();
-      toast("Preview could not start");
+    },{once:true});
+
+    audio.addEventListener("ended",()=>{
+      if(currentAudio===audio)stopPreview();
+    },{once:true});
+
+    audio.addEventListener("error",()=>{
+      if(currentAudio!==audio)return;
+      currentAudio=null;
+      currentSongId=null;
+      currentSource=null;
+      cover.classList.remove("loading","playing");
+      if(!playSpotifyFallback(song,cover))toast("Preview could not be played");
+    },{once:true});
+
+    try{
+      await audio.play();
+      if(currentAudio===audio){
+        cover.classList.remove("loading");
+        cover.classList.add("playing");
+      }
+      return;
+    }catch(e){
+      if(currentAudio===audio){
+        currentAudio=null;
+        currentSongId=null;
+        currentSource=null;
+        cover.classList.remove("loading","playing");
+      }
+      if(playSpotifyFallback(song,cover))return;
     }
   }
+
+  if(playSpotifyFallback(song,cover))return;
+  toast("No audio preview available for this song");
 }
+
+function setupSpotifyControllers(IFrameAPI){
+  spotifyApiReady=true;
+
+  Object.entries(SPOTIFY_TRACK_OVERRIDES).forEach(([songIdRaw,cfg])=>{
+    const songId=Number(songIdRaw);
+    if(spotifyControllers.has(songId))return;
+
+    const host=document.createElement("div");
+    host.className="spotify-offscreen";
+    host.id=`spotify-fallback-${songId}`;
+    host.setAttribute("aria-hidden","true");
+    document.body.appendChild(host);
+
+    IFrameAPI.createController(
+      host,
+      {width:300,height:80,uri:`spotify:track:${cfg.trackId}`},
+      controller=>{
+        spotifyControllers.set(songId,controller);
+
+        controller.addListener?.("playback_started",()=>{
+          if(currentSongId!==songId||currentSource!=="spotify"){
+            try{controller.pause()}catch(_){}
+            return;
+          }
+          clearCoverStates();
+          const cover=spotifyCover(songId);
+          cover?.classList.remove("loading");
+          cover?.classList.add("playing");
+        });
+
+        controller.addListener?.("playback_update",event=>{
+          if(currentSongId!==songId||currentSource!=="spotify")return;
+          const cover=spotifyCover(songId);
+          if(event?.data?.isPaused){
+            cover?.classList.remove("playing","loading");
+          }else{
+            cover?.classList.remove("loading");
+            cover?.classList.add("playing");
+          }
+        });
+
+        if(spotifyPendingSongId===songId && currentSongId===songId){
+          spotifyPendingSongId=null;
+          try{
+            controller.play();
+            const cover=spotifyCover(songId);
+            cover?.classList.remove("loading");
+            cover?.classList.add("playing");
+          }catch(e){
+            stopPreview();
+            toast("Spotify preview could not start");
+          }
+        }
+      }
+    );
+  });
+}
+
+window.onSpotifyIframeApiReady=IFrameAPI=>setupSpotifyControllers(IFrameAPI);
 
 function getRowAtPoint(x,y,excludeId){
   const els=document.elementsFromPoint(
@@ -452,4 +595,5 @@ $("#search").oninput=render;$("#share").onclick=$("#mobileShare").onclick=$("#mo
 $("#exportModal").onclick=e=>{if(e.target.id==="exportModal")closeExport()};document.onkeydown=e=>{if(e.key==="Escape"){stopPreview();cleanupDrag();closeExport()}};
 load();render();hydrateCatalogue();
 </script>
+<script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
 </body></html>
