@@ -4,12 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#090a0d">
-<link rel="preconnect" href="https://itunes.apple.com">
-<link rel="preconnect" href="https://is1-ssl.mzstatic.com">
-<link rel="preconnect" href="https://is2-ssl.mzstatic.com">
-<link rel="preconnect" href="https://is3-ssl.mzstatic.com">
-<link rel="preconnect" href="https://is4-ssl.mzstatic.com">
-<link rel="preconnect" href="https://is5-ssl.mzstatic.com">
 <title>ba. song ranking</title>
 <meta name="description" content="Rank ba. songs, preview tracks, and export your final list.">
 <style>
@@ -162,6 +156,28 @@ audio{width:100%;height:38px;margin-top:10px}
   color:var(--muted);font-size:12px;line-height:1.55
 }
 .fact b{color:var(--text)}
+
+.preview-drawer{
+  position:fixed;inset:0;z-index:150;display:none;align-items:flex-end;justify-content:center;
+  padding:14px;background:rgba(0,0,0,.72);backdrop-filter:blur(12px)
+}
+.preview-drawer.show{display:flex}
+.preview-sheet{
+  width:min(720px,100%);background:#111318;border:1px solid var(--line2);
+  border-radius:22px;padding:14px;box-shadow:0 30px 100px rgba(0,0,0,.55)
+}
+.preview-sheet-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.preview-sheet-title{min-width:0}
+.preview-sheet-title b{display:block;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.preview-sheet-title span{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+.preview-frame{width:100%;height:175px;border:0;border-radius:13px;background:#0d0f12}
+.release-cover{
+  width:100%;height:100%;display:grid;place-items:end start;padding:7px;
+  background:linear-gradient(145deg,hsl(var(--hue) 38% 26%),hsl(calc(var(--hue) + 38) 28% 9%));
+  font-size:9px;font-weight:950;line-height:1.05;letter-spacing:-.02em;color:white;text-align:left
+}
+.release-year{font-size:8px;opacity:.68;display:block;margin-top:3px;letter-spacing:.08em}
+
 @media(max-width:760px){
   .listen-wrap.open .listen-menu{
     position:fixed;
@@ -213,7 +229,7 @@ audio{width:100%;height:38px;margin-top:10px}
     <div>
       <div class="eyebrow">Unofficial fan ranking</div>
       <h1>ba.<br>song ranking</h1>
-      <p>Put the discography in your order. Artwork loads automatically. Tap the play button on any cover for a short preview, use Listen for Spotify or Apple Music, reorder your tracks, then export the finished ranking.</p>
+      <p>Put the discography in your order. Songs are ordered chronologically by default. Tap the play button for the baked Apple Music preview player, use Listen for Spotify or Apple Music, reorder your tracks, then export the finished ranking.</p>
     </div>
     <div class="hero-mark">ba.</div>
   </header>
@@ -241,7 +257,7 @@ audio{width:100%;height:38px;margin-top:10px}
   <main id="list" class="list"></main>
 
   <div class="fact">
-    <b>Catalogue scope.</b> This list ranks distinct ba. songs and credited collaborations. Unplugged versions and obvious duplicate recordings are excluded; separate songs that happen to share similar titles remain.
+    <b>Catalogue scope.</b> This list ranks distinct ba. songs and credited collaborations in chronological release order by default. Unplugged versions and obvious duplicate recordings are excluded.
   </div>
 </div>
 
@@ -266,12 +282,31 @@ audio{width:100%;height:38px;margin-top:10px}
   </section>
 </div>
 
+
+<div class="preview-drawer" id="previewDrawer" role="dialog" aria-modal="true" aria-label="Apple Music preview">
+  <div class="preview-sheet">
+    <div class="preview-sheet-head">
+      <div class="preview-sheet-title">
+        <b id="previewSongTitle"></b>
+        <span id="previewSongMeta"></span>
+      </div>
+      <button class="close" id="closePreview" aria-label="Close preview">×</button>
+    </div>
+    <iframe
+      id="previewFrame"
+      class="preview-frame"
+      allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write"
+      sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation-by-user-activation"
+      loading="eager"></iframe>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-const SONGS = [{"id": 0, "title": "Be tylos", "release": "Raktas", "year": 2013, "artist": "ba.", "alt": false, "search": "ba. Be tylos"}, {"id": 1, "title": "Spaudžia iš aplink laisvė iš vidaus", "release": "Raktas", "year": 2013, "artist": "ba.", "alt": false, "search": "ba. Spaudžia iš aplink laisvė iš vidaus"}, {"id": 2, "title": "Tai ne žmogus", "release": "Raktas", "year": 2013, "artist": "ba.", "alt": false, "search": "ba. Tai ne žmogus"}, {"id": 3, "title": "Tu jauti / lieti", "release": "Raktas", "year": 2013, "artist": "ba.", "alt": false, "search": "ba. Tu jauti / lieti"}, {"id": 4, "title": "Raktas", "release": "Raktas", "year": 2013, "artist": "ba.", "alt": false, "search": "ba. Raktas"}, {"id": 5, "title": "Aš pats esi", "release": "Rasti / Pasiklysti", "year": 2015, "artist": "ba.", "alt": false, "search": "ba. Aš pats esi"}, {"id": 6, "title": "Naktį judu", "release": "Rasti / Pasiklysti", "year": 2015, "artist": "ba.", "alt": false, "search": "ba. Naktį judu"}, {"id": 7, "title": "Jaučiu / pavėsių aidų", "release": "Rasti / Pasiklysti", "year": 2015, "artist": "ba.", "alt": false, "search": "ba. Jaučiu / pavėsių aidų"}, {"id": 8, "title": "Į mane", "release": "Rasti / Pasiklysti", "year": 2015, "artist": "ba.", "alt": false, "search": "ba. Į mane"}, {"id": 9, "title": "Kodėl tu toks aš", "release": "Rasti / Pasiklysti", "year": 2015, "artist": "ba.", "alt": false, "search": "ba. Kodėl tu toks aš"}, {"id": 10, "title": "Klaidos", "release": "Rasti / Pasiklysti", "year": 2015, "artist": "ba.", "alt": false, "search": "ba. Klaidos"}, {"id": 11, "title": "Ar sau tiesą sakai", "release": "Rasti / Pasiklysti", "year": 2015, "artist": "ba.", "alt": false, "search": "ba. Ar sau tiesą sakai"}, {"id": 12, "title": "Juodaesi", "release": "Rasti / Pasiklysti", "year": 2015, "artist": "ba.", "alt": false, "search": "ba. Juodaesi"}, {"id": 13, "title": "Rasti / Pasiklysti", "release": "Rasti / Pasiklysti", "year": 2015, "artist": "ba.", "alt": false, "search": "ba. Rasti / Pasiklysti"}, {"id": 14, "title": "Juda kojos / jauti", "release": "Rasti / Pasiklysti", "year": 2015, "artist": "ba.", "alt": false, "search": "ba. Juda kojos / jauti"}, {"id": 16, "title": "Sugebėt pasikeist - Bonus Track", "release": "Rasti / Pasiklysti", "year": 2015, "artist": "ba.", "alt": true, "search": "ba. Sugebėt pasikeist - Bonus Track"}, {"id": 17, "title": "Kūną palikai / atsibudai", "release": "Saulėsužtemimas", "year": 2016, "artist": "ba.", "alt": false, "search": "ba. Kūną palikai / atsibudai"}, {"id": 18, "title": "Byru iš lėto", "release": "Saulėsužtemimas", "year": 2016, "artist": "ba.", "alt": false, "search": "ba. Byru iš lėto"}, {"id": 19, "title": "Saulėsužtemimas", "release": "Saulėsužtemimas", "year": 2016, "artist": "ba.", "alt": false, "search": "ba. Saulėsužtemimas"}, {"id": 20, "title": "Auka", "release": "Garsiai Mąstau", "year": 2017, "artist": "ba.", "alt": false, "search": "ba. Auka"}, {"id": 21, "title": "Sapne / Patalpoje", "release": "Garsiai Mąstau", "year": 2017, "artist": "ba.", "alt": false, "search": "ba. Sapne / Patalpoje"}, {"id": 22, "title": "Vaikai²", "release": "Garsiai Mąstau", "year": 2017, "artist": "ba.", "alt": false, "search": "ba. Vaikai²"}, {"id": 23, "title": "L2", "release": "Garsiai Mąstau", "year": 2017, "artist": "ba.", "alt": false, "search": "ba. L2"}, {"id": 24, "title": "Atsiprashow", "release": "H8", "year": 2019, "artist": "ba.", "alt": false, "search": "ba. Atsiprashow"}, {"id": 25, "title": "Akli Vagiai", "release": "H8", "year": 2019, "artist": "ba.", "alt": false, "search": "ba. Akli Vagiai"}, {"id": 26, "title": "Savo", "release": "H8", "year": 2019, "artist": "ba.", "alt": false, "search": "ba. Savo"}, {"id": 27, "title": "Iliuzija", "release": "H8", "year": 2019, "artist": "ba.", "alt": false, "search": "ba. Iliuzija"}, {"id": 28, "title": "Ramunė pt.1", "release": "H8", "year": 2019, "artist": "ba.", "alt": false, "search": "ba. Ramunė pt.1"}, {"id": 29, "title": "Ramunė pt.2", "release": "H8", "year": 2019, "artist": "ba.", "alt": false, "search": "ba. Ramunė pt.2"}, {"id": 30, "title": "Antisentimentalus", "release": "H8", "year": 2019, "artist": "ba.", "alt": false, "search": "ba. Antisentimentalus"}, {"id": 31, "title": "Hirudinea", "release": "H8", "year": 2019, "artist": "ba.", "alt": false, "search": "ba. Hirudinea"}, {"id": 32, "title": "Išnara", "release": "H8", "year": 2019, "artist": "ba.", "alt": false, "search": "ba. Išnara"}, {"id": 33, "title": "Outro", "release": "H8", "year": 2019, "artist": "ba.", "alt": false, "search": "ba. Outro"}, {"id": 34, "title": "NUOGAS NERVAS", "release": "NAUTO", "year": 2022, "artist": "ba.", "alt": false, "search": "ba. NUOGAS NERVAS"}, {"id": 35, "title": "FONAS", "release": "NAUTO", "year": 2022, "artist": "ba.", "alt": false, "search": "ba. FONAS"}, {"id": 36, "title": "PAŽADAI", "release": "NAUTO", "year": 2022, "artist": "ba.", "alt": false, "search": "ba. PAŽADAI"}, {"id": 37, "title": "TRŪNO KIAURAI", "release": "NAUTO", "year": 2022, "artist": "ba.", "alt": false, "search": "ba. TRŪNO KIAURAI"}, {"id": 38, "title": "PURVO GERKLE", "release": "NAUTO", "year": 2022, "artist": "ba.", "alt": false, "search": "ba. PURVO GERKLE"}, {"id": 39, "title": "IŠ NAUJO", "release": "NAUTO", "year": 2022, "artist": "ba.", "alt": false, "search": "ba. IŠ NAUJO"}, {"id": 40, "title": "SKĘSTAM", "release": "NAUTO", "year": 2022, "artist": "ba.", "alt": false, "search": "ba. SKĘSTAM"}, {"id": 41, "title": "LINIJA", "release": "NAUTO", "year": 2022, "artist": "ba.", "alt": false, "search": "ba. LINIJA"}, {"id": 42, "title": "PRARADAU MINTIS", "release": "NAUTO", "year": 2022, "artist": "ba.", "alt": false, "search": "ba. PRARADAU MINTIS"}, {"id": 43, "title": "ŠOKIS", "release": "NAUTO", "year": 2022, "artist": "ba.", "alt": false, "search": "ba. ŠOKIS"}, {"id": 44, "title": "Veidas", "release": "TURTAS", "year": 2024, "artist": "ba.", "alt": false, "search": "ba. Veidas"}, {"id": 45, "title": "VHS", "release": "TURTAS", "year": 2024, "artist": "ba.", "alt": false, "search": "ba. VHS"}, {"id": 46, "title": "Kiek Dar Vargo", "release": "TURTAS", "year": 2024, "artist": "ba.", "alt": false, "search": "ba. Kiek Dar Vargo"}, {"id": 47, "title": "Silpti Naudoje", "release": "TURTAS", "year": 2024, "artist": "ba.", "alt": false, "search": "ba. Silpti Naudoje"}, {"id": 48, "title": "Kultas", "release": "TURTAS", "year": 2024, "artist": "ba.", "alt": false, "search": "ba. Kultas"}, {"id": 49, "title": "Lėlė", "release": "TURTAS", "year": 2024, "artist": "ba.", "alt": false, "search": "ba. Lėlė"}, {"id": 50, "title": "Istorija", "release": "TURTAS", "year": 2024, "artist": "ba.", "alt": false, "search": "ba. Istorija"}, {"id": 51, "title": "Atleisk Man", "release": "TURTAS", "year": 2024, "artist": "ba.", "alt": false, "search": "ba. Atleisk Man"}, {"id": 52, "title": "Atidavei", "release": "TURTAS", "year": 2024, "artist": "ba.", "alt": false, "search": "ba. Atidavei"}, {"id": 53, "title": "Pastovi", "release": "TURTAS", "year": 2024, "artist": "ba.", "alt": false, "search": "ba. Pastovi"}, {"id": 54, "title": "Vitrina", "release": "Single", "year": 2021, "artist": "ba.", "alt": false, "search": "ba. Vitrina"}, {"id": 55, "title": "Pilnatis", "release": "Single", "year": 2021, "artist": "ba.", "alt": false, "search": "ba. Pilnatis"}, {"id": 56, "title": "Paralyžius", "release": "Single", "year": 2021, "artist": "ba.", "alt": false, "search": "ba. Paralyžius"}, {"id": 57, "title": "Trenk", "release": "Single", "year": 2020, "artist": "ba.", "alt": false, "search": "ba. Trenk"}, {"id": 60, "title": "Žodžiai", "release": "Single", "year": 2023, "artist": "Gintariniai Laikai & ba.", "alt": false, "search": "Gintariniai Laikai & ba. Žodžiai"}, {"id": 61, "title": "DRUGIO EFEKTAS", "release": "Single/feature", "year": 2025, "artist": "Angelou & ba.", "alt": false, "search": "Angelou & ba. DRUGIO EFEKTAS"}, {"id": 62, "title": "Skandalas", "release": "Single/feature", "year": 2025, "artist": "Requiem feat. ba.", "alt": false, "search": "Requiem feat. ba. Skandalas"}, {"id": 63, "title": "Nidos daina", "release": "Single/feature", "year": 2026, "artist": "Nidos daina & ba.", "alt": false, "search": "Nidos daina & ba. Nidos daina"}, {"id": 64, "title": "5K. PAROJE", "release": "MIXTAPE VOL 1", "year": 2026, "artist": "ba.", "alt": false, "search": "ba. 5K. PAROJE"}, {"id": 65, "title": "APMAUDU", "release": "MIXTAPE VOL 1", "year": 2026, "artist": "ba.", "alt": false, "search": "ba. APMAUDU"}, {"id": 66, "title": "(PA)LAIKAI MANE", "release": "MIXTAPE VOL 1", "year": 2026, "artist": "ba.", "alt": false, "search": "ba. (PA)LAIKAI MANE"}, {"id": 67, "title": "VIENĄ DIENĄ", "release": "MIXTAPE VOL 1", "year": 2026, "artist": "ba.", "alt": false, "search": "ba. VIENĄ DIENĄ"}, {"id": 68, "title": "KLOJA KLOJA", "release": "MIXTAPE VOL 1", "year": 2026, "artist": "ba.", "alt": false, "search": "ba. KLOJA KLOJA"}, {"id": 69, "title": "AŠ SUGRĮŠIU", "release": "MIXTAPE VOL 1", "year": 2026, "artist": "ba.", "alt": false, "search": "ba. AŠ SUGRĮŠIU"}, {"id": 70, "title": "DULKĖS", "release": "MIXTAPE VOL 1", "year": 2026, "artist": "ba.", "alt": false, "search": "ba. DULKĖS"}, {"id": 71, "title": "PADĖTIS", "release": "MIXTAPE VOL 1", "year": 2026, "artist": "ba.", "alt": false, "search": "ba. PADĖTIS"}, {"id": 72, "title": "JDS", "release": "MIXTAPE VOL 1", "year": 2026, "artist": "ba.", "alt": false, "search": "ba. JDS"}, {"id": 73, "title": "OUTRO", "release": "MIXTAPE VOL 1", "year": 2026, "artist": "ba.", "alt": false, "search": "ba. OUTRO"}, {"id": 74, "title": "NUODAI", "release": "JV2026", "year": 2026, "artist": "ba. feat. solo ansamblis", "alt": false, "search": "ba. feat. solo ansamblis NUODAI"}, {"id": 75, "title": "Paprastu Instinktu Gyvenu", "release": "Single", "year": 2017, "artist": "ba. feat. Despotin Fam", "alt": false, "search": "ba. feat. Despotin Fam Paprastu Instinktu Gyvenu"}, {"id": 76, "title": "Pati kalta", "release": "Single", "year": 2017, "artist": "ba.", "alt": false, "search": "ba. Pati kalta"}, {"id": 77, "title": "LAIKAI MANE", "release": "Single", "year": 2024, "artist": "ba.", "alt": false, "search": "ba. LAIKAI MANE"}, {"id": 78, "title": "Randai=veiksmai", "release": "Single", "year": 2018, "artist": "ba.", "alt": false, "search": "ba. Randai=veiksmai"}];
-const KEY="ba-ranking-v4";
-let order=SONGS.map(s=>s.id), dragId=null, mediaCache=new Map(), mediaPending=new Map();
+const SONGS = [{"id": 0, "title": "Be tylos", "release": "Raktas", "year": 2013, "artist": "ba.", "alt": false, "search": "ba. Be tylos", "appleEmbed": "https://embed.music.apple.com/us/song/1513033479", "appleMusic": "https://music.apple.com/us/song/1513033479"}, {"id": 1, "title": "Spaudžia iš aplink laisvė iš vidaus", "release": "Raktas", "year": 2013, "artist": "ba.", "alt": false, "search": "ba. Spaudžia iš aplink laisvė iš vidaus", "appleEmbed": "https://embed.music.apple.com/lt/album/raktas-ep/1513033476", "appleMusic": "https://music.apple.com/lt/album/raktas-ep/1513033476"}, {"id": 2, "title": "Tai ne žmogus", "release": "Raktas", "year": 2013, "artist": "ba.", "alt": false, "search": "ba. Tai ne žmogus", "appleEmbed": "https://embed.music.apple.com/lt/album/raktas-ep/1513033476", "appleMusic": "https://music.apple.com/lt/album/raktas-ep/1513033476"}, {"id": 3, "title": "Tu jauti / lieti", "release": "Raktas", "year": 2013, "artist": "ba.", "alt": false, "search": "ba. Tu jauti / lieti", "appleEmbed": "https://embed.music.apple.com/lt/album/raktas-ep/1513033476", "appleMusic": "https://music.apple.com/lt/album/raktas-ep/1513033476"}, {"id": 4, "title": "Raktas", "release": "Raktas", "year": 2013, "artist": "ba.", "alt": false, "search": "ba. Raktas", "appleEmbed": "https://embed.music.apple.com/lt/album/raktas-ep/1513033476", "appleMusic": "https://music.apple.com/lt/album/raktas-ep/1513033476"}, {"id": 5, "title": "Aš pats esi", "release": "Rasti / Pasiklysti", "year": 2015, "artist": "ba.", "alt": false, "search": "ba. Aš pats esi", "appleEmbed": "https://embed.music.apple.com/us/album/rasti-pasiklysti/1514252601", "appleMusic": "https://music.apple.com/us/album/rasti-pasiklysti/1514252601"}, {"id": 6, "title": "Naktį judu", "release": "Rasti / Pasiklysti", "year": 2015, "artist": "ba.", "alt": false, "search": "ba. Naktį judu", "appleEmbed": "https://embed.music.apple.com/us/album/rasti-pasiklysti/1514252601", "appleMusic": "https://music.apple.com/us/album/rasti-pasiklysti/1514252601"}, {"id": 7, "title": "Jaučiu / pavėsių aidų", "release": "Rasti / Pasiklysti", "year": 2015, "artist": "ba.", "alt": false, "search": "ba. Jaučiu / pavėsių aidų", "appleEmbed": "https://embed.music.apple.com/us/album/rasti-pasiklysti/1514252601", "appleMusic": "https://music.apple.com/us/album/rasti-pasiklysti/1514252601"}, {"id": 8, "title": "Į mane", "release": "Rasti / Pasiklysti", "year": 2015, "artist": "ba.", "alt": false, "search": "ba. Į mane", "appleEmbed": "https://embed.music.apple.com/us/album/rasti-pasiklysti/1514252601", "appleMusic": "https://music.apple.com/us/album/rasti-pasiklysti/1514252601"}, {"id": 9, "title": "Kodėl tu toks aš", "release": "Rasti / Pasiklysti", "year": 2015, "artist": "ba.", "alt": false, "search": "ba. Kodėl tu toks aš", "appleEmbed": "https://embed.music.apple.com/us/album/rasti-pasiklysti/1514252601", "appleMusic": "https://music.apple.com/us/album/rasti-pasiklysti/1514252601"}, {"id": 10, "title": "Klaidos", "release": "Rasti / Pasiklysti", "year": 2015, "artist": "ba.", "alt": false, "search": "ba. Klaidos", "appleEmbed": "https://embed.music.apple.com/us/album/rasti-pasiklysti/1514252601", "appleMusic": "https://music.apple.com/us/album/rasti-pasiklysti/1514252601"}, {"id": 11, "title": "Ar sau tiesą sakai", "release": "Rasti / Pasiklysti", "year": 2015, "artist": "ba.", "alt": false, "search": "ba. Ar sau tiesą sakai", "appleEmbed": "https://embed.music.apple.com/us/album/rasti-pasiklysti/1514252601", "appleMusic": "https://music.apple.com/us/album/rasti-pasiklysti/1514252601"}, {"id": 12, "title": "Juodaesi", "release": "Rasti / Pasiklysti", "year": 2015, "artist": "ba.", "alt": false, "search": "ba. Juodaesi", "appleEmbed": "https://embed.music.apple.com/us/album/rasti-pasiklysti/1514252601", "appleMusic": "https://music.apple.com/us/album/rasti-pasiklysti/1514252601"}, {"id": 13, "title": "Rasti / Pasiklysti", "release": "Rasti / Pasiklysti", "year": 2015, "artist": "ba.", "alt": false, "search": "ba. Rasti / Pasiklysti", "appleEmbed": "https://embed.music.apple.com/us/album/rasti-pasiklysti/1514252601", "appleMusic": "https://music.apple.com/us/album/rasti-pasiklysti/1514252601"}, {"id": 14, "title": "Juda kojos / jauti", "release": "Rasti / Pasiklysti", "year": 2015, "artist": "ba.", "alt": false, "search": "ba. Juda kojos / jauti", "appleEmbed": "https://embed.music.apple.com/us/album/rasti-pasiklysti/1514252601", "appleMusic": "https://music.apple.com/us/album/rasti-pasiklysti/1514252601"}, {"id": 16, "title": "Sugebėt pasikeist - Bonus Track", "release": "Rasti / Pasiklysti", "year": 2015, "artist": "ba.", "alt": true, "search": "ba. Sugebėt pasikeist - Bonus Track", "appleEmbed": "https://embed.music.apple.com/us/album/rasti-pasiklysti/1514252601", "appleMusic": "https://music.apple.com/us/album/rasti-pasiklysti/1514252601"}, {"id": 17, "title": "Kūną palikai / atsibudai", "release": "Saulėsužtemimas", "year": 2016, "artist": "ba.", "alt": false, "search": "ba. Kūną palikai / atsibudai", "appleEmbed": "https://embed.music.apple.com/lt/song/1383204457", "appleMusic": "https://music.apple.com/lt/song/1383204457"}, {"id": 18, "title": "Byru iš lėto", "release": "Saulėsužtemimas", "year": 2016, "artist": "ba.", "alt": false, "search": "ba. Byru iš lėto", "appleEmbed": "https://embed.music.apple.com/us/album/saul%C4%97su%C5%BEtemimas-single/1383204454", "appleMusic": "https://music.apple.com/us/album/saul%C4%97su%C5%BEtemimas-single/1383204454"}, {"id": 19, "title": "Saulėsužtemimas", "release": "Saulėsužtemimas", "year": 2016, "artist": "ba.", "alt": false, "search": "ba. Saulėsužtemimas", "appleEmbed": "https://embed.music.apple.com/us/album/saul%C4%97su%C5%BEtemimas-single/1383204454", "appleMusic": "https://music.apple.com/us/album/saul%C4%97su%C5%BEtemimas-single/1383204454"}, {"id": 20, "title": "Auka", "release": "Garsiai Mąstau", "year": 2017, "artist": "ba.", "alt": false, "search": "ba. Auka", "appleEmbed": "https://embed.music.apple.com/us/song/1208362501", "appleMusic": "https://music.apple.com/us/song/1208362501"}, {"id": 21, "title": "Sapne / Patalpoje", "release": "Garsiai Mąstau", "year": 2017, "artist": "ba.", "alt": false, "search": "ba. Sapne / Patalpoje", "appleEmbed": "https://embed.music.apple.com/us/album/garsiai-m%C4%85stau-ep/1208362395", "appleMusic": "https://music.apple.com/us/album/garsiai-m%C4%85stau-ep/1208362395"}, {"id": 22, "title": "Vaikai²", "release": "Garsiai Mąstau", "year": 2017, "artist": "ba.", "alt": false, "search": "ba. Vaikai²", "appleEmbed": "https://embed.music.apple.com/us/album/garsiai-m%C4%85stau-ep/1208362395", "appleMusic": "https://music.apple.com/us/album/garsiai-m%C4%85stau-ep/1208362395"}, {"id": 23, "title": "L2", "release": "Garsiai Mąstau", "year": 2017, "artist": "ba.", "alt": false, "search": "ba. L2", "appleEmbed": "https://embed.music.apple.com/us/album/garsiai-m%C4%85stau-ep/1208362395", "appleMusic": "https://music.apple.com/us/album/garsiai-m%C4%85stau-ep/1208362395"}, {"id": 75, "title": "Paprastu Instinktu Gyvenu", "release": "Single", "year": 2017, "artist": "ba. feat. Despotin Fam", "alt": false, "search": "ba. feat. Despotin Fam Paprastu Instinktu Gyvenu", "appleEmbed": "", "appleMusic": "https://music.apple.com/lt/search?term=ba.%20feat.%20Despotin%20Fam%20Paprastu%20Instinktu%20Gyvenu"}, {"id": 76, "title": "Pati kalta", "release": "Single", "year": 2017, "artist": "ba.", "alt": false, "search": "ba. Pati kalta", "appleEmbed": "", "appleMusic": "https://music.apple.com/lt/search?term=ba.%20Pati%20kalta"}, {"id": 78, "title": "Randai=veiksmai", "release": "Single", "year": 2018, "artist": "ba.", "alt": false, "search": "ba. Randai=veiksmai", "appleEmbed": "", "appleMusic": "https://music.apple.com/lt/search?term=ba.%20Randai=veiksmai"}, {"id": 24, "title": "Atsiprashow", "release": "H8", "year": 2019, "artist": "ba.", "alt": false, "search": "ba. Atsiprashow", "appleEmbed": "https://embed.music.apple.com/us/album/h8/1462803914", "appleMusic": "https://music.apple.com/us/album/h8/1462803914"}, {"id": 25, "title": "Akli Vagiai", "release": "H8", "year": 2019, "artist": "ba.", "alt": false, "search": "ba. Akli Vagiai", "appleEmbed": "https://embed.music.apple.com/us/album/h8/1462803914", "appleMusic": "https://music.apple.com/us/album/h8/1462803914"}, {"id": 26, "title": "Savo", "release": "H8", "year": 2019, "artist": "ba.", "alt": false, "search": "ba. Savo", "appleEmbed": "https://embed.music.apple.com/us/album/h8/1462803914", "appleMusic": "https://music.apple.com/us/album/h8/1462803914"}, {"id": 27, "title": "Iliuzija", "release": "H8", "year": 2019, "artist": "ba.", "alt": false, "search": "ba. Iliuzija", "appleEmbed": "https://embed.music.apple.com/us/song/1462803919", "appleMusic": "https://music.apple.com/us/song/1462803919"}, {"id": 28, "title": "Ramunė pt.1", "release": "H8", "year": 2019, "artist": "ba.", "alt": false, "search": "ba. Ramunė pt.1", "appleEmbed": "https://embed.music.apple.com/us/album/h8/1462803914", "appleMusic": "https://music.apple.com/us/album/h8/1462803914"}, {"id": 29, "title": "Ramunė pt.2", "release": "H8", "year": 2019, "artist": "ba.", "alt": false, "search": "ba. Ramunė pt.2", "appleEmbed": "https://embed.music.apple.com/us/song/1462803921", "appleMusic": "https://music.apple.com/us/song/1462803921"}, {"id": 30, "title": "Antisentimentalus", "release": "H8", "year": 2019, "artist": "ba.", "alt": false, "search": "ba. Antisentimentalus", "appleEmbed": "https://embed.music.apple.com/us/song/1462803922", "appleMusic": "https://music.apple.com/us/song/1462803922"}, {"id": 31, "title": "Hirudinea", "release": "H8", "year": 2019, "artist": "ba.", "alt": false, "search": "ba. Hirudinea", "appleEmbed": "https://embed.music.apple.com/us/album/h8/1462803914", "appleMusic": "https://music.apple.com/us/album/h8/1462803914"}, {"id": 32, "title": "Išnara", "release": "H8", "year": 2019, "artist": "ba.", "alt": false, "search": "ba. Išnara", "appleEmbed": "https://embed.music.apple.com/us/album/h8/1462803914", "appleMusic": "https://music.apple.com/us/album/h8/1462803914"}, {"id": 33, "title": "Outro", "release": "H8", "year": 2019, "artist": "ba.", "alt": false, "search": "ba. Outro", "appleEmbed": "https://embed.music.apple.com/us/album/h8/1462803914", "appleMusic": "https://music.apple.com/us/album/h8/1462803914"}, {"id": 57, "title": "Trenk", "release": "Single", "year": 2020, "artist": "ba.", "alt": false, "search": "ba. Trenk", "appleEmbed": "", "appleMusic": "https://music.apple.com/lt/search?term=ba.%20Trenk"}, {"id": 54, "title": "Vitrina", "release": "Single", "year": 2021, "artist": "ba.", "alt": false, "search": "ba. Vitrina", "appleEmbed": "https://embed.music.apple.com/us/song/1579925414", "appleMusic": "https://music.apple.com/us/song/1579925414"}, {"id": 55, "title": "Pilnatis", "release": "Single", "year": 2021, "artist": "ba.", "alt": false, "search": "ba. Pilnatis", "appleEmbed": "", "appleMusic": "https://music.apple.com/lt/search?term=ba.%20Pilnatis"}, {"id": 56, "title": "Paralyžius", "release": "Single", "year": 2021, "artist": "ba.", "alt": false, "search": "ba. Paralyžius", "appleEmbed": "", "appleMusic": "https://music.apple.com/lt/search?term=ba.%20Paralyžius"}, {"id": 34, "title": "NUOGAS NERVAS", "release": "NAUTO", "year": 2022, "artist": "ba.", "alt": false, "search": "ba. NUOGAS NERVAS", "appleEmbed": "https://embed.music.apple.com/us/album/nauto/1646112206", "appleMusic": "https://music.apple.com/us/album/nauto/1646112206"}, {"id": 35, "title": "FONAS", "release": "NAUTO", "year": 2022, "artist": "ba.", "alt": false, "search": "ba. FONAS", "appleEmbed": "https://embed.music.apple.com/us/album/nauto/1646112206", "appleMusic": "https://music.apple.com/us/album/nauto/1646112206"}, {"id": 36, "title": "PAŽADAI", "release": "NAUTO", "year": 2022, "artist": "ba.", "alt": false, "search": "ba. PAŽADAI", "appleEmbed": "https://embed.music.apple.com/us/album/nauto/1646112206", "appleMusic": "https://music.apple.com/us/album/nauto/1646112206"}, {"id": 37, "title": "TRŪNO KIAURAI", "release": "NAUTO", "year": 2022, "artist": "ba.", "alt": false, "search": "ba. TRŪNO KIAURAI", "appleEmbed": "https://embed.music.apple.com/us/album/nauto/1646112206", "appleMusic": "https://music.apple.com/us/album/nauto/1646112206"}, {"id": 38, "title": "PURVO GERKLE", "release": "NAUTO", "year": 2022, "artist": "ba.", "alt": false, "search": "ba. PURVO GERKLE", "appleEmbed": "https://embed.music.apple.com/us/album/nauto/1646112206", "appleMusic": "https://music.apple.com/us/album/nauto/1646112206"}, {"id": 39, "title": "IŠ NAUJO", "release": "NAUTO", "year": 2022, "artist": "ba.", "alt": false, "search": "ba. IŠ NAUJO", "appleEmbed": "https://embed.music.apple.com/us/song/1646112218", "appleMusic": "https://music.apple.com/us/song/1646112218"}, {"id": 40, "title": "SKĘSTAM", "release": "NAUTO", "year": 2022, "artist": "ba.", "alt": false, "search": "ba. SKĘSTAM", "appleEmbed": "https://embed.music.apple.com/us/album/nauto/1646112206", "appleMusic": "https://music.apple.com/us/album/nauto/1646112206"}, {"id": 41, "title": "LINIJA", "release": "NAUTO", "year": 2022, "artist": "ba.", "alt": false, "search": "ba. LINIJA", "appleEmbed": "https://embed.music.apple.com/us/song/1646112222", "appleMusic": "https://music.apple.com/us/song/1646112222"}, {"id": 42, "title": "PRARADAU MINTIS", "release": "NAUTO", "year": 2022, "artist": "ba.", "alt": false, "search": "ba. PRARADAU MINTIS", "appleEmbed": "https://embed.music.apple.com/us/song/1646112225", "appleMusic": "https://music.apple.com/us/song/1646112225"}, {"id": 43, "title": "ŠOKIS", "release": "NAUTO", "year": 2022, "artist": "ba.", "alt": false, "search": "ba. ŠOKIS", "appleEmbed": "https://embed.music.apple.com/us/song/1646112412", "appleMusic": "https://music.apple.com/us/song/1646112412"}, {"id": 60, "title": "Žodžiai", "release": "Single", "year": 2023, "artist": "Gintariniai Laikai & ba.", "alt": false, "search": "Gintariniai Laikai & ba. Žodžiai", "appleEmbed": "", "appleMusic": "https://music.apple.com/lt/search?term=Gintariniai%20Laikai%20&%20ba.%20Žodžiai"}, {"id": 44, "title": "Veidas", "release": "TURTAS", "year": 2024, "artist": "ba.", "alt": false, "search": "ba. Veidas", "appleEmbed": "https://embed.music.apple.com/us/song/1783677953", "appleMusic": "https://music.apple.com/us/song/1783677953"}, {"id": 45, "title": "VHS", "release": "TURTAS", "year": 2024, "artist": "ba.", "alt": false, "search": "ba. VHS", "appleEmbed": "https://embed.music.apple.com/us/album/turtas/1783677818", "appleMusic": "https://music.apple.com/us/album/turtas/1783677818"}, {"id": 46, "title": "Kiek Dar Vargo", "release": "TURTAS", "year": 2024, "artist": "ba.", "alt": false, "search": "ba. Kiek Dar Vargo", "appleEmbed": "https://embed.music.apple.com/us/song/1783677962", "appleMusic": "https://music.apple.com/us/song/1783677962"}, {"id": 47, "title": "Silpti Naudoje", "release": "TURTAS", "year": 2024, "artist": "ba.", "alt": false, "search": "ba. Silpti Naudoje", "appleEmbed": "https://embed.music.apple.com/us/album/turtas/1783677818", "appleMusic": "https://music.apple.com/us/album/turtas/1783677818"}, {"id": 48, "title": "Kultas", "release": "TURTAS", "year": 2024, "artist": "ba.", "alt": false, "search": "ba. Kultas", "appleEmbed": "https://embed.music.apple.com/us/album/turtas/1783677818", "appleMusic": "https://music.apple.com/us/album/turtas/1783677818"}, {"id": 49, "title": "Lėlė", "release": "TURTAS", "year": 2024, "artist": "ba.", "alt": false, "search": "ba. Lėlė", "appleEmbed": "https://embed.music.apple.com/us/album/turtas/1783677818", "appleMusic": "https://music.apple.com/us/album/turtas/1783677818"}, {"id": 50, "title": "Istorija", "release": "TURTAS", "year": 2024, "artist": "ba.", "alt": false, "search": "ba. Istorija", "appleEmbed": "https://embed.music.apple.com/us/album/turtas/1783677818", "appleMusic": "https://music.apple.com/us/album/turtas/1783677818"}, {"id": 51, "title": "Atleisk Man", "release": "TURTAS", "year": 2024, "artist": "ba.", "alt": false, "search": "ba. Atleisk Man", "appleEmbed": "https://embed.music.apple.com/us/album/turtas/1783677818", "appleMusic": "https://music.apple.com/us/album/turtas/1783677818"}, {"id": 52, "title": "Atidavei", "release": "TURTAS", "year": 2024, "artist": "ba.", "alt": false, "search": "ba. Atidavei", "appleEmbed": "https://embed.music.apple.com/us/album/turtas/1783677818", "appleMusic": "https://music.apple.com/us/album/turtas/1783677818"}, {"id": 53, "title": "Pastovi", "release": "TURTAS", "year": 2024, "artist": "ba.", "alt": false, "search": "ba. Pastovi", "appleEmbed": "https://embed.music.apple.com/us/album/turtas/1783677818", "appleMusic": "https://music.apple.com/us/album/turtas/1783677818"}, {"id": 77, "title": "LAIKAI MANE", "release": "Single", "year": 2024, "artist": "ba.", "alt": false, "search": "ba. LAIKAI MANE", "appleEmbed": "", "appleMusic": "https://music.apple.com/lt/search?term=ba.%20LAIKAI%20MANE"}, {"id": 61, "title": "DRUGIO EFEKTAS", "release": "Single/feature", "year": 2025, "artist": "Angelou & ba.", "alt": false, "search": "Angelou & ba. DRUGIO EFEKTAS", "appleEmbed": "", "appleMusic": "https://music.apple.com/lt/search?term=Angelou%20&%20ba.%20DRUGIO%20EFEKTAS"}, {"id": 62, "title": "Skandalas", "release": "Single/feature", "year": 2025, "artist": "Requiem feat. ba.", "alt": false, "search": "Requiem feat. ba. Skandalas", "appleEmbed": "", "appleMusic": "https://music.apple.com/lt/search?term=Requiem%20feat.%20ba.%20Skandalas"}, {"id": 63, "title": "Nidos daina", "release": "Single/feature", "year": 2026, "artist": "Nidos daina & ba.", "alt": false, "search": "Nidos daina & ba. Nidos daina", "appleEmbed": "", "appleMusic": "https://music.apple.com/lt/search?term=Nidos%20daina%20&%20ba.%20Nidos%20daina"}, {"id": 64, "title": "5K. PAROJE", "release": "MIXTAPE VOL 1", "year": 2026, "artist": "ba.", "alt": false, "search": "ba. 5K. PAROJE", "appleEmbed": "https://embed.music.apple.com/ly/album/mixtape-vol-1/6777080991", "appleMusic": "https://music.apple.com/ly/album/mixtape-vol-1/6777080991"}, {"id": 65, "title": "APMAUDU", "release": "MIXTAPE VOL 1", "year": 2026, "artist": "ba.", "alt": false, "search": "ba. APMAUDU", "appleEmbed": "https://embed.music.apple.com/ly/album/mixtape-vol-1/6777080991", "appleMusic": "https://music.apple.com/ly/album/mixtape-vol-1/6777080991"}, {"id": 66, "title": "(PA)LAIKAI MANE", "release": "MIXTAPE VOL 1", "year": 2026, "artist": "ba.", "alt": false, "search": "ba. (PA)LAIKAI MANE", "appleEmbed": "https://embed.music.apple.com/ly/album/mixtape-vol-1/6777080991", "appleMusic": "https://music.apple.com/ly/album/mixtape-vol-1/6777080991"}, {"id": 67, "title": "VIENĄ DIENĄ", "release": "MIXTAPE VOL 1", "year": 2026, "artist": "ba.", "alt": false, "search": "ba. VIENĄ DIENĄ", "appleEmbed": "https://embed.music.apple.com/ly/album/mixtape-vol-1/6777080991", "appleMusic": "https://music.apple.com/ly/album/mixtape-vol-1/6777080991"}, {"id": 68, "title": "KLOJA KLOJA", "release": "MIXTAPE VOL 1", "year": 2026, "artist": "ba.", "alt": false, "search": "ba. KLOJA KLOJA", "appleEmbed": "https://embed.music.apple.com/ly/album/mixtape-vol-1/6777080991", "appleMusic": "https://music.apple.com/ly/album/mixtape-vol-1/6777080991"}, {"id": 69, "title": "AŠ SUGRĮŠIU", "release": "MIXTAPE VOL 1", "year": 2026, "artist": "ba.", "alt": false, "search": "ba. AŠ SUGRĮŠIU", "appleEmbed": "https://embed.music.apple.com/ly/album/mixtape-vol-1/6777080991", "appleMusic": "https://music.apple.com/ly/album/mixtape-vol-1/6777080991"}, {"id": 70, "title": "DULKĖS", "release": "MIXTAPE VOL 1", "year": 2026, "artist": "ba.", "alt": false, "search": "ba. DULKĖS", "appleEmbed": "https://embed.music.apple.com/ly/album/mixtape-vol-1/6777080991", "appleMusic": "https://music.apple.com/ly/album/mixtape-vol-1/6777080991"}, {"id": 71, "title": "PADĖTIS", "release": "MIXTAPE VOL 1", "year": 2026, "artist": "ba.", "alt": false, "search": "ba. PADĖTIS", "appleEmbed": "https://embed.music.apple.com/ly/album/mixtape-vol-1/6777080991", "appleMusic": "https://music.apple.com/ly/album/mixtape-vol-1/6777080991"}, {"id": 72, "title": "JDS", "release": "MIXTAPE VOL 1", "year": 2026, "artist": "ba.", "alt": false, "search": "ba. JDS", "appleEmbed": "https://embed.music.apple.com/ly/album/mixtape-vol-1/6777080991", "appleMusic": "https://music.apple.com/ly/album/mixtape-vol-1/6777080991"}, {"id": 73, "title": "OUTRO", "release": "MIXTAPE VOL 1", "year": 2026, "artist": "ba.", "alt": false, "search": "ba. OUTRO", "appleEmbed": "https://embed.music.apple.com/ly/album/mixtape-vol-1/6777080991", "appleMusic": "https://music.apple.com/ly/album/mixtape-vol-1/6777080991"}, {"id": 74, "title": "NUODAI", "release": "JV2026", "year": 2026, "artist": "ba. feat. solo ansamblis", "alt": false, "search": "ba. feat. solo ansamblis NUODAI", "appleEmbed": "https://embed.music.apple.com/us/album/jv2026-single/6771386014", "appleMusic": "https://music.apple.com/us/album/jv2026-single/6771386014"}];
+const KEY="ba-ranking-v5";
+let order=SONGS.map(s=>s.id), dragId=null;
 
 const $=q=>document.querySelector(q);
 const list=$("#list"), search=$("#search");
@@ -320,12 +355,10 @@ function render(){
     const el=document.createElement("article");
     el.className="song";el.draggable=matchMedia("(min-width:761px)").matches;el.dataset.id=song.id;
     el.style.setProperty("--hue",releaseHue(song));
-    const cached=mediaCache.get(song.id);
-    const art=cached?.artworkUrl100?.replace("100x100","200x200");
     el.innerHTML=`
       <div class="rank">${idx+1}</div>
       <div class="art-wrap">
-        ${art?`<img class="art" src="${esc(art)}" alt="${esc(song.title)} artwork">`:`<div class="art art-fallback">${esc(song.release)}</div>`}
+        <div class="release-cover">${esc(song.release)}<span class="release-year">${song.year}</span></div>
         <button class="play-cover" data-action="preview" aria-label="Play preview of ${esc(song.title)}" title="Play preview"></button>
       </div>
       <div class="song-copy">
@@ -340,7 +373,7 @@ function render(){
           <button class="mini listen" data-action="listen" aria-expanded="false">Listen</button>
           <div class="listen-menu">
             <a target="_blank" rel="noopener" href="${spotifySearch(song)}">Spotify <span>↗</span></a>
-            <a target="_blank" rel="noopener" href="${cached?.trackViewUrl?esc(cached.trackViewUrl):appleSearchUrl(song)}">Apple Music <span>↗</span></a>
+            <a target="_blank" rel="noopener" href="${esc(song.appleMusic)}">Apple Music <span>↗</span></a>
           </div>
         </div>
         <button class="mini handle" title="Drag to reorder" aria-label="Drag to reorder">⠿</button>
@@ -350,7 +383,7 @@ function render(){
       if(action==="up") move(song.id,-1);
       if(action==="down") move(song.id,1);
       if(action==="listen") toggleListenMenu(el,e.target.closest(".listen-wrap"));
-      if(action==="preview") togglePreview(el,song,e.target.closest(".play-cover"));
+      if(action==="preview") openPreview(song);
     });
     el.addEventListener("dragstart",()=>{dragId=song.id;el.classList.add("dragging")});
     el.addEventListener("dragend",()=>{dragId=null;el.classList.remove("dragging");document.querySelectorAll(".song").forEach(x=>x.classList.remove("over"))});
@@ -376,212 +409,21 @@ function resetRanking(){
   }
 }
 
-function jsonp(url,params,callbackParam="callback"){
-  return new Promise((resolve,reject)=>{
-    const cb="media_cb_"+Date.now()+"_"+Math.random().toString(36).slice(2);
-    const script=document.createElement("script");
-    const timeout=setTimeout(()=>{
-      cleanup();
-      reject(new Error("JSONP timeout"));
-    },12000);
 
-    function cleanup(){
-      clearTimeout(timeout);
-      try{delete window[cb]}catch(e){window[cb]=undefined}
-      script.remove();
-    }
-
-    window[cb]=data=>{
-      cleanup();
-      resolve(data);
-    };
-
-    script.onerror=()=>{
-      cleanup();
-      reject(new Error("JSONP request failed"));
-    };
-
-    const qs=new URLSearchParams({...params,[callbackParam]:cb});
-    script.src=url+"?"+qs.toString();
-    script.async=true;
-    document.head.appendChild(script);
-  });
-}
-
-function appleToMedia(x){
-  if(!x)return null;
-  return {
-    source:"apple",
-    trackName:x.trackName,
-    artistName:x.artistName,
-    collectionName:x.collectionName,
-    artworkUrl100:x.artworkUrl100,
-    previewUrl:x.previewUrl,
-    trackViewUrl:x.trackViewUrl
-  };
-}
-
-function deezerToMedia(x){
-  if(!x)return null;
-  return {
-    source:"deezer",
-    trackName:x.title,
-    artistName:x.artist?.name,
-    collectionName:x.album?.title,
-    artworkUrl100:x.album?.cover_medium || x.album?.cover_big || x.album?.cover,
-    previewUrl:x.preview,
-    trackViewUrl:x.link
-  };
-}
-
-async function lookupApple(song){
-  const data=await jsonp(
-    "https://itunes.apple.com/search",
-    {
-      term:song.title+" "+song.artist.replace("feat.",""),
-      entity:"song",
-      limit:"25",
-      country:"lt",
-      media:"music"
-    }
-  );
-
-  const results=Array.isArray(data?.results)?data.results:[];
-  const title=norm(song.title);
-  const artist=norm(song.artist.replace(/feat\..*/i,"").trim());
-
-  let best=results.find(x=>
-    norm(x.trackName)===title &&
-    (norm(x.artistName).includes("ba") || norm(x.artistName).includes(artist))
-  );
-  if(!best) best=results.find(x=>norm(x.trackName)===title);
-  if(!best) best=results.find(x=>norm(x.trackName).includes(title)||title.includes(norm(x.trackName)));
-
-  return appleToMedia(best);
-}
-
-async function lookupDeezer(song){
-  // Deezer's JSONP parameter is "output=jsonp" + callback.
-  const q=`artist:"${song.artist.replace(/feat\..*/i,"").trim()}" track:"${song.title}"`;
-  const data=await jsonp(
-    "https://api.deezer.com/search",
-    {q,limit:"20",output:"jsonp"}
-  );
-
-  const results=Array.isArray(data?.data)?data.data:[];
-  const title=norm(song.title);
-
-  let best=results.find(x=>norm(x.title)===title);
-  if(!best) best=results.find(x=>norm(x.title).includes(title)||title.includes(norm(x.title)));
-
-  return deezerToMedia(best);
-}
-
-async function lookupMedia(song){
-  if(mediaCache.has(song.id)) return mediaCache.get(song.id);
-  if(mediaPending.has(song.id)) return mediaPending.get(song.id);
-
-  const p=(async()=>{
-    let media=null;
-
-    try{
-      media=await lookupApple(song);
-    }catch(e){
-      console.debug("Apple lookup failed",song.title,e);
-    }
-
-    // If Apple returns no result/artwork/preview, try Deezer too.
-    if(!media?.artworkUrl100 || !media?.previewUrl){
-      try{
-        const dz=await lookupDeezer(song);
-        if(dz){
-          media={
-            ...(media||{}),
-            artworkUrl100:media?.artworkUrl100 || dz.artworkUrl100,
-            previewUrl:media?.previewUrl || dz.previewUrl,
-            trackName:media?.trackName || dz.trackName,
-            artistName:media?.artistName || dz.artistName,
-            collectionName:media?.collectionName || dz.collectionName,
-            trackViewUrl:media?.trackViewUrl || dz.trackViewUrl,
-            source:media?.source ? media.source+"+deezer" : "deezer"
-          };
-        }
-      }catch(e){
-        console.debug("Deezer lookup failed",song.title,e);
-      }
-    }
-
-    if(media?.artworkUrl100 || media?.previewUrl){
-      mediaCache.set(song.id,media);
-      return media;
-    }
-    return null;
-  })().finally(()=>mediaPending.delete(song.id));
-
-  mediaPending.set(song.id,p);
-  return p;
-}
-
-let currentAudio=null,currentSongId=null,currentRow=null;
-function stopPreview(){
-  if(currentAudio){currentAudio.pause();currentAudio.currentTime=0}
-  if(currentRow)currentRow.classList.remove("playing");
-  currentAudio=null;currentSongId=null;currentRow=null;
-}
-function closeListenMenus(){
-  document.querySelectorAll(".listen-wrap.open").forEach(x=>{
-    x.classList.remove("open");
-    x.querySelector("button")?.setAttribute("aria-expanded","false");
-    x.closest(".song")?.classList.remove("menu-open");
-  });
-}
-function toggleListenMenu(el,wrap){
-  const wasOpen=wrap.classList.contains("open");
-  closeListenMenus();
-  if(!wasOpen){
-    wrap.classList.add("open");
-    wrap.querySelector("button")?.setAttribute("aria-expanded","true");
-    el.classList.add("menu-open");
-  }
-}
-document.addEventListener("click",e=>{
-  if(!e.target.closest(".listen-wrap"))closeListenMenus();
-});
-async function togglePreview(el,song,btn){
-  if(currentSongId===song.id&&currentAudio&&!currentAudio.paused){stopPreview();return}
-  stopPreview();btn.classList.add("loading");
-  const m=await lookupMedia(song);btn.classList.remove("loading");
-  if(!m?.previewUrl){toast("No preview available for this track");return}
-  const audio=new Audio(m.previewUrl);audio.preload="auto";currentAudio=audio;currentSongId=song.id;currentRow=el;
-  el.classList.add("playing");
-  audio.addEventListener("ended",stopPreview,{once:true});
-  audio.addEventListener("error",()=>{stopPreview();toast("Preview could not be played")},{once:true});
-  try{await audio.play()}catch(e){stopPreview();toast("Tap again to play preview")}
-}
-function applyMediaToRow(song,m){
-  const el=document.querySelector(`.song[data-id="${song.id}"]`);if(!el)return;
-  if(!m){
-    const note=el.querySelector(".preview-note");
-    if(note)note.textContent="preview unavailable";
+function openPreview(song){
+  if(!song.appleEmbed){
+    window.open(song.appleMusic,"_blank","noopener");
     return;
   }
-  const art=(m.artworkUrl100||"").replace("100x100","300x300");
-  if(art){
-    const wrap=el.querySelector(".art-wrap"),old=wrap?.querySelector(".art");
-    if(wrap&&old?.tagName!=="IMG"){
-      const img=document.createElement("img");img.className="art";img.alt=`${song.title} artwork`;img.src=art;old.replaceWith(img)
-    }else if(old?.tagName==="IMG"&&!old.src){old.src=art}
-  }
-  const apple=el.querySelector('.listen-menu a:nth-child(2)');if(apple&&m.trackViewUrl)apple.href=m.trackViewUrl;
+  $("#previewSongTitle").textContent=song.title;
+  $("#previewSongMeta").textContent=`${song.release} · ${song.year}`;
+  const frame=$("#previewFrame");
+  frame.src=song.appleEmbed;
+  $("#previewDrawer").classList.add("show");
 }
-async function preloadAllMedia(){
-  const queue=[...SONGS];let cursor=0;
-  async function worker(){
-    while(cursor<queue.length){
-      const song=queue[cursor++];const m=await lookupMedia(song);applyMediaToRow(song,m);
-    }
-  }
-  await Promise.all(Array.from({length:3},worker));
+function closePreview(){
+  $("#previewDrawer").classList.remove("show");
+  $("#previewFrame").src="about:blank";
 }
 
 function rankingRows(limit=SONGS.length){
@@ -651,9 +493,11 @@ $("#shareBtn").onclick=copyShare;$("#shareMobile").onclick=copyShare;$("#modalSh
 $("#resetBtn").onclick=resetRanking;$("#exportBtn").onclick=openExport;$("#exportMobile").onclick=openExport;
 $("#closeModal").onclick=closeExport;$("#exportModal").addEventListener("click",e=>{if(e.target.id==="exportModal")closeExport()});
 $("#textBtn").onclick=copyText;$("#csvBtn").onclick=exportCsv;$("#pngBtn").onclick=exportPng;
-document.addEventListener("keydown",e=>{if(e.key==="Escape")closeExport()});
+$("#closePreview").onclick=closePreview;
+$("#previewDrawer").addEventListener("click",e=>{if(e.target.id==="previewDrawer")closePreview()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeExport();closePreview()}});
 
-load();render();preloadAllMedia();
+load();render();
 </script>
 </body>
 </html>
