@@ -33,26 +33,36 @@ input:focus{border-color:#606977}
 .stats{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 18px}
 .pill{font-size:11px;color:var(--muted);border:1px solid var(--line);background:var(--panel);padding:7px 10px;border-radius:999px}.pill b{color:var(--text)}
 .list{display:grid;gap:8px}
-.song{position:relative;display:grid;grid-template-columns:52px 66px minmax(0,1fr) auto;align-items:center;gap:12px;min-height:84px;padding:8px 10px 8px 6px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,#15181e,#101216);transition:.12s;touch-action:pan-y}
-.song.dragging{opacity:.72;z-index:90;box-shadow:0 24px 70px rgba(0,0,0,.55);border-color:var(--accent);transform:scale(1.015)}
+.song{position:relative;display:grid;grid-template-columns:52px 66px minmax(0,1fr) auto;align-items:center;gap:12px;min-height:84px;padding:8px 10px 8px 6px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,#15181e,#101216);transition:border-color .12s,transform .12s,opacity .12s;touch-action:pan-y}
+.song.drag-source{opacity:.22;border-color:var(--accent)}
 .song.drop-target{border-color:var(--accent)}
+.drag-ghost{
+  position:fixed;z-index:300;pointer-events:none;margin:0;
+  opacity:.96;transform:scale(1.018);
+  box-shadow:0 24px 70px rgba(0,0,0,.58);
+  border-color:var(--accent)!important;
+  will-change:top,left;
+}
+body.reordering{user-select:none;-webkit-user-select:none;cursor:grabbing}
+body.reordering *{cursor:grabbing!important}
 .rank{height:54px;border-right:1px solid var(--line);display:grid;place-items:center;font-weight:900;font-variant-numeric:tabular-nums;color:#d7dbe1}
 .cover{position:relative;width:66px;height:66px;border:0;padding:0;border-radius:11px;overflow:hidden;background:#1c2027;cursor:pointer;box-shadow:0 7px 20px rgba(0,0,0,.28)}
 .cover img{display:block;width:100%;height:100%;object-fit:cover}.cover-fallback{width:100%;height:100%;display:grid;place-items:end start;padding:7px;background:linear-gradient(145deg,#343b47,#121419);font-size:9px;text-align:left;color:#fff;font-weight:900}
-.play{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.12);transition:.15s}.play::before{content:"";width:29px;height:29px;border-radius:50%;background:rgba(9,10,13,.82);box-shadow:0 3px 12px rgba(0,0,0,.35)}.play::after{content:"";position:absolute;border-left:8px solid white;border-top:5px solid transparent;border-bottom:5px solid transparent;margin-left:3px}
+.play{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.12);transition:.15s}
+.play::before{content:"";width:31px;height:31px;border-radius:50%;background:rgba(9,10,13,.84);box-shadow:0 3px 12px rgba(0,0,0,.35)}
+.play::after{content:"";position:absolute;border-left:8px solid white;border-top:5px solid transparent;border-bottom:5px solid transparent;margin-left:3px}
+.cover.playing .play{background:rgba(0,0,0,.28)}
+.cover.playing .play::after{border:0;width:9px;height:11px;margin:0;background:linear-gradient(90deg,#fff 0 34%,transparent 34% 64%,#fff 64% 100%)}
+.cover.loading .play::after{border:2px solid rgba(255,255,255,.45);border-top-color:#fff;width:12px;height:12px;border-radius:50%;margin:0;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 .cover:hover .play{background:rgba(0,0,0,.25)}
 .copy{min-width:0}.title{font-size:15px;font-weight:860;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.meta{font-size:11px;color:var(--muted);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .actions{display:flex;gap:6px;align-items:center}
 .move,.drag-handle,.brand{height:38px;min-width:38px;border-radius:10px;border:1px solid var(--line2);background:var(--panel3);color:white;display:grid;place-items:center;cursor:pointer;text-decoration:none;padding:0}
-.move:disabled{opacity:.23}.drag-handle{font-size:18px;cursor:grab;touch-action:none}.drag-handle:active{cursor:grabbing}
+.move:disabled{opacity:.23}.drag-handle{font-size:20px;cursor:grab;touch-action:none;font-weight:900}.drag-handle:active{cursor:grabbing;background:#303641}
 .brand svg{width:18px;height:18px;display:block}.brand.spotify:hover{border-color:#1ed760}.brand.apple:hover{border-color:#aaa}
 .brand.disabled{opacity:.25;pointer-events:none}
 .loader{position:absolute;inset:0;display:grid;place-items:center;background:linear-gradient(145deg,#242933,#101216);font-size:9px;color:var(--muted);font-weight:800}
-.preview-backdrop{display:none;position:fixed;inset:0;z-index:150;background:rgba(0,0,0,.72);backdrop-filter:blur(12px);align-items:flex-end;justify-content:center;padding:12px}
-.preview-backdrop.show{display:flex}.preview-sheet{width:min(680px,100%);background:#111318;border:1px solid var(--line2);border-radius:21px;padding:14px;box-shadow:0 30px 100px rgba(0,0,0,.58)}
-.preview-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}.preview-copy{min-width:0}.preview-copy b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.preview-copy span{display:block;color:var(--muted);font-size:11px;margin-top:3px}
-.close{width:40px;height:40px;border:1px solid var(--line2);border-radius:50%;background:var(--panel3);color:white;font-size:20px}
-.preview-audio{width:100%;margin:4px 0 6px}.apple-frame{width:100%;height:175px;border:0;border-radius:12px;background:#0d0f12}
 .export-backdrop{display:none;position:fixed;inset:0;z-index:160;background:rgba(0,0,0,.72);backdrop-filter:blur(12px);align-items:flex-end;justify-content:center;padding:12px}.export-backdrop.show{display:flex}
 .export-sheet{width:min(720px,100%);max-height:85vh;overflow:auto;background:#111318;border:1px solid var(--line2);border-radius:21px;padding:15px}
 .export-preview{background:#f2efe6;color:#111214;border-radius:16px;padding:22px}.export-preview h2{font-size:38px;line-height:.92;letter-spacing:-.055em;margin:7px 0 17px}.export-row{display:grid;grid-template-columns:34px 1fr;gap:10px;padding:7px 0;border-top:1px solid rgba(0,0,0,.12);font-size:12px;font-weight:750}
@@ -65,7 +75,7 @@ input:focus{border-color:#606977}
 .song{grid-template-columns:38px 58px minmax(0,1fr);gap:9px;min-height:76px;padding:8px 7px 8px 4px}.rank{height:49px;font-size:14px}.cover{width:58px;height:58px;border-radius:9px}
 .actions{grid-column:3;gap:5px;margin-top:1px}.move,.drag-handle,.brand{height:42px;min-width:42px}.drag-handle{display:grid}.title{font-size:14px}.meta{font-size:10px}
 .bottom{display:grid;position:fixed;z-index:80;left:9px;right:9px;bottom:max(9px,env(safe-area-inset-bottom));grid-template-columns:1fr 1fr;gap:7px;padding:7px;border-radius:15px;background:rgba(17,19,24,.94);border:1px solid var(--line2);backdrop-filter:blur(16px);box-shadow:0 15px 48px rgba(0,0,0,.45)}.bottom .btn{height:48px}
-.preview-backdrop,.export-backdrop{padding:7px}.preview-sheet,.export-sheet{border-radius:20px 20px 10px 10px}
+.export-backdrop{padding:7px}.export-sheet{border-radius:20px 20px 10px 10px}
 }
 @media(max-width:410px){h1{font-size:50px}.song{grid-template-columns:34px 54px minmax(0,1fr);gap:7px}.cover{width:54px;height:54px}.actions{gap:4px}.move,.drag-handle,.brand{height:40px;min-width:40px}}
 </style>
@@ -79,7 +89,6 @@ input:focus{border-color:#606977}
 </div>
 <div class="bottom"><button class="btn primary" id="mobileExport">Export</button><button class="btn" id="mobileShare">Share</button></div>
 
-<div class="preview-backdrop" id="previewModal"><div class="preview-sheet"><div class="preview-head"><div class="preview-copy"><b id="previewTitle"></b><span id="previewMeta"></span></div><button class="close" id="previewClose">×</button></div><audio id="previewAudio" class="preview-audio" controls preload="none"></audio><iframe id="appleFrame" class="apple-frame" allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation-by-user-activation"></iframe></div></div>
 
 <div class="export-backdrop" id="exportModal"><div class="export-sheet"><div class="preview-head"><div class="preview-copy"><b>Final ranking</b><span>Export the complete list</span></div><button class="close" id="exportClose">×</button></div><div class="export-preview" id="exportPreview"></div><div class="export-actions"><button class="btn primary" id="png">Download image</button><button class="btn" id="copy">Copy text</button><button class="btn" id="csv">Download CSV</button><button class="btn" id="modalShare">Copy share link</button></div></div></div>
 <div class="toast" id="toast"></div>
@@ -88,7 +97,8 @@ input:focus{border-color:#606977}
 const APPLE_ARTIST_ID="1208362498";
 const SONGS=[{"id":0,"title":"Be tylos","release":"Raktas","year":2013,"artist":"ba.","alt":false,"search":"ba. Be tylos","dateHint":"2013-05-10"},{"id":1,"title":"Spaudžia iš aplink laisvė iš vidaus","release":"Raktas","year":2013,"artist":"ba.","alt":false,"search":"ba. Spaudžia iš aplink laisvė iš vidaus","dateHint":"2013-05-10"},{"id":2,"title":"Tai ne žmogus","release":"Raktas","year":2013,"artist":"ba.","alt":false,"search":"ba. Tai ne žmogus","dateHint":"2013-05-10"},{"id":3,"title":"Tu jauti / lieti","release":"Raktas","year":2013,"artist":"ba.","alt":false,"search":"ba. Tu jauti / lieti","dateHint":"2013-05-10"},{"id":4,"title":"Raktas","release":"Raktas","year":2013,"artist":"ba.","alt":false,"search":"ba. Raktas","dateHint":"2013-05-10"},{"id":5,"title":"Aš pats esi","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Aš pats esi","dateHint":"2015-02-23"},{"id":6,"title":"Naktį judu","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Naktį judu","dateHint":"2015-02-23"},{"id":7,"title":"Jaučiu / pavėsių aidų","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Jaučiu / pavėsių aidų","dateHint":"2015-02-23"},{"id":8,"title":"Į mane","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Į mane","dateHint":"2015-02-23"},{"id":9,"title":"Kodėl tu toks aš","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Kodėl tu toks aš","dateHint":"2015-02-23"},{"id":10,"title":"Klaidos","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Klaidos","dateHint":"2015-02-23"},{"id":11,"title":"Ar sau tiesą sakai","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Ar sau tiesą sakai","dateHint":"2015-02-23"},{"id":12,"title":"Juodaesi","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Juodaesi","dateHint":"2015-02-23"},{"id":13,"title":"Rasti / Pasiklysti","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Rasti / Pasiklysti","dateHint":"2015-02-23"},{"id":14,"title":"Juda kojos / jauti","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":false,"search":"ba. Juda kojos / jauti","dateHint":"2015-02-23"},{"id":16,"title":"Sugebėt pasikeist - Bonus Track","release":"Rasti / Pasiklysti","year":2015,"artist":"ba.","alt":true,"search":"ba. Sugebėt pasikeist - Bonus Track","dateHint":"2015-02-23"},{"id":17,"title":"Kūną palikai / atsibudai","release":"Saulėsužtemimas","year":2016,"artist":"ba.","alt":false,"search":"ba. Kūną palikai / atsibudai","dateHint":"2016-01-01"},{"id":18,"title":"Byru iš lėto","release":"Saulėsužtemimas","year":2016,"artist":"ba.","alt":false,"search":"ba. Byru iš lėto","dateHint":"2016-01-01"},{"id":19,"title":"Saulėsužtemimas","release":"Saulėsužtemimas","year":2016,"artist":"ba.","alt":false,"search":"ba. Saulėsužtemimas","dateHint":"2016-01-01"},{"id":20,"title":"Auka","release":"Garsiai Mąstau","year":2017,"artist":"ba.","alt":false,"search":"ba. Auka","dateHint":"2017-01-01"},{"id":21,"title":"Sapne / Patalpoje","release":"Garsiai Mąstau","year":2017,"artist":"ba.","alt":false,"search":"ba. Sapne / Patalpoje","dateHint":"2017-01-01"},{"id":22,"title":"Vaikai²","release":"Garsiai Mąstau","year":2017,"artist":"ba.","alt":false,"search":"ba. Vaikai²","dateHint":"2017-01-01"},{"id":23,"title":"L2","release":"Garsiai Mąstau","year":2017,"artist":"ba.","alt":false,"search":"ba. L2","dateHint":"2017-01-01"},{"id":75,"title":"Paprastu Instinktu Gyvenu","release":"Single","year":2017,"artist":"ba. feat. Despotin Fam","alt":false,"search":"ba. feat. Despotin Fam Paprastu Instinktu Gyvenu","dateHint":"2017-12-31"},{"id":76,"title":"Pati kalta","release":"Single","year":2017,"artist":"ba.","alt":false,"search":"ba. Pati kalta","dateHint":"2017-12-31"},{"id":78,"title":"Randai=veiksmai","release":"Single","year":2018,"artist":"ba.","alt":false,"search":"ba. Randai=veiksmai","dateHint":"2018-12-31"},{"id":24,"title":"Atsiprashow","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Atsiprashow","dateHint":"2019-01-01"},{"id":25,"title":"Akli Vagiai","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Akli Vagiai","dateHint":"2019-01-01"},{"id":26,"title":"Savo","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Savo","dateHint":"2019-01-01"},{"id":27,"title":"Iliuzija","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Iliuzija","dateHint":"2019-01-01"},{"id":28,"title":"Ramunė pt.1","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Ramunė pt.1","dateHint":"2019-01-01"},{"id":29,"title":"Ramunė pt.2","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Ramunė pt.2","dateHint":"2019-01-01"},{"id":30,"title":"Antisentimentalus","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Antisentimentalus","dateHint":"2019-01-01"},{"id":31,"title":"Hirudinea","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Hirudinea","dateHint":"2019-01-01"},{"id":32,"title":"Išnara","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Išnara","dateHint":"2019-01-01"},{"id":33,"title":"Outro","release":"H8","year":2019,"artist":"ba.","alt":false,"search":"ba. Outro","dateHint":"2019-01-01"},{"id":57,"title":"Trenk","release":"Single","year":2020,"artist":"ba.","alt":false,"search":"ba. Trenk","dateHint":"2020-12-31"},{"id":54,"title":"Vitrina","release":"Single","year":2021,"artist":"ba.","alt":false,"search":"ba. Vitrina","dateHint":"2021-12-31"},{"id":55,"title":"Pilnatis","release":"Single","year":2021,"artist":"ba.","alt":false,"search":"ba. Pilnatis","dateHint":"2021-12-31"},{"id":56,"title":"Paralyžius","release":"Single","year":2021,"artist":"ba.","alt":false,"search":"ba. Paralyžius","dateHint":"2021-12-31"},{"id":34,"title":"NUOGAS NERVAS","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. NUOGAS NERVAS","dateHint":"2022-09-30"},{"id":35,"title":"FONAS","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. FONAS","dateHint":"2022-09-30"},{"id":36,"title":"PAŽADAI","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. PAŽADAI","dateHint":"2022-09-30"},{"id":37,"title":"TRŪNO KIAURAI","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. TRŪNO KIAURAI","dateHint":"2022-09-30"},{"id":38,"title":"PURVO GERKLE","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. PURVO GERKLE","dateHint":"2022-09-30"},{"id":39,"title":"IŠ NAUJO","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. IŠ NAUJO","dateHint":"2022-09-30"},{"id":40,"title":"SKĘSTAM","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. SKĘSTAM","dateHint":"2022-09-30"},{"id":41,"title":"LINIJA","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. LINIJA","dateHint":"2022-09-30"},{"id":42,"title":"PRARADAU MINTIS","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. PRARADAU MINTIS","dateHint":"2022-09-30"},{"id":43,"title":"ŠOKIS","release":"NAUTO","year":2022,"artist":"ba.","alt":false,"search":"ba. ŠOKIS","dateHint":"2022-09-30"},{"id":60,"title":"Žodžiai","release":"Single","year":2023,"artist":"Gintariniai Laikai & ba.","alt":false,"search":"Gintariniai Laikai & ba. Žodžiai","dateHint":"2023-12-31"},{"id":44,"title":"Veidas","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Veidas","dateHint":"2024-12-09"},{"id":45,"title":"VHS","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. VHS","dateHint":"2024-12-09"},{"id":46,"title":"Kiek Dar Vargo","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Kiek Dar Vargo","dateHint":"2024-12-09"},{"id":47,"title":"Silpti Naudoje","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Silpti Naudoje","dateHint":"2024-12-09"},{"id":48,"title":"Kultas","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Kultas","dateHint":"2024-12-09"},{"id":49,"title":"Lėlė","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Lėlė","dateHint":"2024-12-09"},{"id":50,"title":"Istorija","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Istorija","dateHint":"2024-12-09"},{"id":51,"title":"Atleisk Man","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Atleisk Man","dateHint":"2024-12-09"},{"id":52,"title":"Atidavei","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Atidavei","dateHint":"2024-12-09"},{"id":53,"title":"Pastovi","release":"TURTAS","year":2024,"artist":"ba.","alt":false,"search":"ba. Pastovi","dateHint":"2024-12-09"},{"id":77,"title":"LAIKAI MANE","release":"Single","year":2024,"artist":"ba.","alt":false,"search":"ba. LAIKAI MANE","dateHint":"2024-12-31"},{"id":61,"title":"DRUGIO EFEKTAS","release":"Single/feature","year":2025,"artist":"Angelou & ba.","alt":false,"search":"Angelou & ba. DRUGIO EFEKTAS","dateHint":"2025-12-31"},{"id":62,"title":"Skandalas","release":"Single/feature","year":2025,"artist":"Requiem feat. ba.","alt":false,"search":"Requiem feat. ba. Skandalas","dateHint":"2025-12-31"},{"id":74,"title":"NUODAI","release":"JV2026","year":2026,"artist":"ba. feat. solo ansamblis","alt":false,"search":"ba. feat. solo ansamblis NUODAI","dateHint":"2026-05-21"},{"id":64,"title":"5K. PAROJE","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. 5K. PAROJE","dateHint":"2026-06-14"},{"id":65,"title":"APMAUDU","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. APMAUDU","dateHint":"2026-06-14"},{"id":66,"title":"(PA)LAIKAI MANE","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. (PA)LAIKAI MANE","dateHint":"2026-06-14"},{"id":67,"title":"VIENĄ DIENĄ","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. VIENĄ DIENĄ","dateHint":"2026-06-14"},{"id":68,"title":"KLOJA KLOJA","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. KLOJA KLOJA","dateHint":"2026-06-14"},{"id":69,"title":"AŠ SUGRĮŠIU","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. AŠ SUGRĮŠIU","dateHint":"2026-06-14"},{"id":70,"title":"DULKĖS","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. DULKĖS","dateHint":"2026-06-14"},{"id":71,"title":"PADĖTIS","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. PADĖTIS","dateHint":"2026-06-14"},{"id":72,"title":"JDS","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. JDS","dateHint":"2026-06-14"},{"id":73,"title":"OUTRO","release":"MIXTAPE VOL 1","year":2026,"artist":"ba.","alt":false,"search":"ba. OUTRO","dateHint":"2026-06-14"},{"id":63,"title":"Nidos daina","release":"Single/feature","year":2026,"artist":"Nidos daina & ba.","alt":false,"search":"Nidos daina & ba. Nidos daina","dateHint":"2026-12-31"}];
 const KEY="ba-ranking-v6";
-let media=new Map(), order=SONGS.map(s=>s.id), dragId=null, touchDrag=null;
+let media=new Map(), order=SONG_IDS(), currentAudio=null, currentSongId=null, dragState=null;
+function SONG_IDS(){return SONGS.map(s=>s.id)}
 const $=q=>document.querySelector(q), byId=id=>SONGS.find(s=>s.id===Number(id));
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const norm=s=>String(s??"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[²]/g,"2").replace(/[^a-z0-9]+/g," ").trim();
@@ -175,59 +185,255 @@ function render(){
     <a class="brand apple" href="${esc(appleFor(s))}" target="_blank" rel="noopener" aria-label="Apple Music" title="Apple Music"><span style="font:700 23px -apple-system,BlinkMacSystemFont,sans-serif;line-height:1"></span></a>
     <button class="drag-handle" data-drag="${s.id}" aria-label="Drag to reorder" title="Drag">⠿</button>
    </div>`;
-  el.addEventListener("click",e=>{const a=e.target.closest("[data-action]")?.dataset.action;if(a==="up")move(s.id,-1);if(a==="down")move(s.id,1);if(a==="preview")openPreview(s)});
+  el.addEventListener("click",e=>{const a=e.target.closest("[data-action]")?.dataset.action;if(a==="up")move(s.id,-1);if(a==="down")move(s.id,1);if(a==="preview")togglePreview(s,e.target.closest(".cover"))});
   root.appendChild(el)
  }
- bindTouchDrag();
+ bindDragHandles();
 }
 function move(id,d){const i=order.indexOf(Number(id)),j=i+d;if(j<0||j>=order.length)return;[order[i],order[j]]=[order[j],order[i]];save();render();requestAnimationFrame(()=>document.querySelector(`.song[data-id="${id}"]`)?.scrollIntoView({block:"nearest"}))}
 function reorder(fromId,toId){
  const from=order.indexOf(Number(fromId)),to=order.indexOf(Number(toId));if(from<0||to<0||from===to)return;
  const [x]=order.splice(from,1);order.splice(to,0,x);save();render()
 }
-function bindTouchDrag(){
- document.querySelectorAll(".drag-handle").forEach(handle=>{
-  handle.onpointerdown=e=>{
-   e.preventDefault();handle.setPointerCapture?.(e.pointerId);
-   const id=Number(handle.dataset.drag),row=handle.closest(".song"),startY=e.clientY;
-   touchDrag={id,row,pointer:e.pointerId,startY,lastY:e.clientY,active:false,timer:setTimeout(()=>{if(!touchDrag)return;touchDrag.active=true;row.classList.add("dragging");if(navigator.vibrate)navigator.vibrate(18)},120)};
-  };
-  handle.onpointermove=e=>{
-   if(!touchDrag||touchDrag.pointer!==e.pointerId)return;touchDrag.lastY=e.clientY;
-   if(!touchDrag.active&&Math.abs(e.clientY-touchDrag.startY)>8){clearTimeout(touchDrag.timer);touchDrag.active=true;touchDrag.row.classList.add("dragging")}
-   if(!touchDrag.active)return;e.preventDefault();
-   document.querySelectorAll(".drop-target").forEach(x=>x.classList.remove("drop-target"));
-   const hit=document.elementFromPoint(Math.min(innerWidth-5,Math.max(5,e.clientX)),e.clientY)?.closest(".song");
-   if(hit&&Number(hit.dataset.id)!==touchDrag.id)hit.classList.add("drop-target");
-   const edge=80;if(e.clientY<edge)scrollBy({top:-13});else if(e.clientY>innerHeight-edge)scrollBy({top:13})
-  };
-  const finish=e=>{
-   if(!touchDrag||touchDrag.pointer!==e.pointerId)return;clearTimeout(touchDrag.timer);
-   const td=touchDrag;touchDrag=null;td.row.classList.remove("dragging");
-   const hit=document.elementFromPoint(Math.min(innerWidth-5,Math.max(5,e.clientX)),e.clientY)?.closest(".song");
-   document.querySelectorAll(".drop-target").forEach(x=>x.classList.remove("drop-target"));
-   if(td.active&&hit&&Number(hit.dataset.id)!==td.id)reorder(td.id,Number(hit.dataset.id))
-  };
-  handle.onpointerup=finish;handle.onpointercancel=finish
- })
- // Desktop native drag via handles/rows.
- document.querySelectorAll(".song").forEach(row=>{
-   row.draggable=matchMedia("(pointer:fine)").matches;
-   row.ondragstart=e=>{dragId=Number(row.dataset.id);row.classList.add("dragging");e.dataTransfer.effectAllowed="move"};
-   row.ondragover=e=>{e.preventDefault();row.classList.add("drop-target")};
-   row.ondragleave=()=>row.classList.remove("drop-target");
-   row.ondrop=e=>{e.preventDefault();row.classList.remove("drop-target");if(dragId!=null)reorder(dragId,Number(row.dataset.id))};
-   row.ondragend=()=>{dragId=null;row.classList.remove("dragging");document.querySelectorAll(".drop-target").forEach(x=>x.classList.remove("drop-target"))}
- })
+
+function stopPreview(){
+  if(currentAudio){
+    currentAudio.pause();
+    currentAudio.currentTime=0;
+    currentAudio.src="";
+  }
+  document.querySelectorAll(".cover.playing,.cover.loading").forEach(x=>x.classList.remove("playing","loading"));
+  currentAudio=null;
+  currentSongId=null;
 }
-function openPreview(s){
- const m=media.get(s.id);$("#previewTitle").textContent=s.title;$("#previewMeta").textContent=`${s.release} · ${displayDate(s)}`;
- const audio=$("#previewAudio"),frame=$("#appleFrame");audio.pause();audio.removeAttribute("src");frame.src="about:blank";
- if(m?.preview){audio.src=m.preview;audio.style.display="block";audio.load();audio.play().catch(()=>{})}else audio.style.display="none";
- if(m?.embed)frame.src=m.embed;else frame.src="https://embed.music.apple.com/us/artist/ba/"+APPLE_ARTIST_ID;
- $("#previewModal").classList.add("show")
+
+async function togglePreview(song,cover){
+  const m=media.get(song.id);
+
+  if(currentSongId===song.id && currentAudio && !currentAudio.paused){
+    stopPreview();
+    return;
+  }
+
+  stopPreview();
+
+  if(!m?.preview){
+    toast("No audio preview available for this song");
+    return;
+  }
+
+  cover.classList.add("loading");
+  const audio=new Audio();
+  audio.preload="auto";
+  audio.src=m.preview;
+  currentAudio=audio;
+  currentSongId=song.id;
+
+  audio.addEventListener("canplay",()=>{
+    if(currentAudio!==audio)return;
+    cover.classList.remove("loading");
+    cover.classList.add("playing");
+  },{once:true});
+
+  audio.addEventListener("ended",()=>{
+    if(currentAudio===audio)stopPreview();
+  },{once:true});
+
+  audio.addEventListener("error",()=>{
+    if(currentAudio===audio){
+      stopPreview();
+      toast("Preview could not be played");
+    }
+  },{once:true});
+
+  try{
+    await audio.play();
+    if(currentAudio===audio){
+      cover.classList.remove("loading");
+      cover.classList.add("playing");
+    }
+  }catch(e){
+    if(currentAudio===audio){
+      stopPreview();
+      toast("Preview could not start");
+    }
+  }
 }
-function closePreview(){$("#previewModal").classList.remove("show");$("#previewAudio").pause();$("#previewAudio").removeAttribute("src");$("#appleFrame").src="about:blank"}
+
+function getRowAtPoint(x,y,excludeId){
+  const els=document.elementsFromPoint(
+    Math.min(innerWidth-4,Math.max(4,x)),
+    Math.min(innerHeight-4,Math.max(4,y))
+  );
+  return els.map(el=>el.closest?.(".song")).find(row=>row && Number(row.dataset.id)!==Number(excludeId)) || null;
+}
+
+function autoScrollForPointer(y){
+  const edge=Math.min(110,innerHeight*.18);
+  let speed=0;
+  if(y<edge) speed=-Math.max(6,Math.round((edge-y)/5));
+  else if(y>innerHeight-edge) speed=Math.max(6,Math.round((y-(innerHeight-edge))/5));
+  if(speed) window.scrollBy(0,speed);
+}
+
+function moveGhost(state,x,y){
+  state.ghost.style.left=`${state.left}px`;
+  state.ghost.style.top=`${y-state.offsetY}px`;
+}
+
+function liveReorder(draggedId,targetId,pointerY){
+  const from=order.indexOf(Number(draggedId));
+  const toRaw=order.indexOf(Number(targetId));
+  if(from<0||toRaw<0||from===toRaw)return false;
+
+  const target=document.querySelector(`.song[data-id="${targetId}"]`);
+  if(!target)return false;
+
+  const rect=target.getBoundingClientRect();
+  const after=pointerY>rect.top+rect.height/2;
+
+  const [item]=order.splice(from,1);
+  let to=order.indexOf(Number(targetId));
+  if(after)to+=1;
+  order.splice(to,0,item);
+
+  save();
+  render();
+  return true;
+}
+
+function cleanupDrag(){
+  if(!dragState)return;
+  clearTimeout(dragState.holdTimer);
+  dragState.ghost?.remove();
+  document.body.classList.remove("reordering");
+  document.querySelectorAll(".song").forEach(x=>x.classList.remove("drag-source","drop-target"));
+  dragState=null;
+}
+
+function beginDrag(handle,e){
+  const row=handle.closest(".song");
+  if(!row)return;
+
+  const rect=row.getBoundingClientRect();
+  const state={
+    id:Number(row.dataset.id),
+    pointerId:e.pointerId,
+    source:row,
+    startX:e.clientX,
+    startY:e.clientY,
+    lastX:e.clientX,
+    lastY:e.clientY,
+    offsetY:e.clientY-rect.top,
+    left:rect.left,
+    width:rect.width,
+    active:false,
+    ghost:null,
+    holdTimer:null
+  };
+
+  dragState=state;
+
+  const activate=()=>{
+    if(!dragState || dragState!==state || state.active)return;
+    state.active=true;
+    state.source.classList.add("drag-source");
+    document.body.classList.add("reordering");
+
+    const ghost=state.source.cloneNode(true);
+    ghost.classList.remove("drag-source","drop-target");
+    ghost.classList.add("drag-ghost");
+    ghost.style.width=`${state.width}px`;
+    ghost.style.height=`${rect.height}px`;
+    ghost.querySelectorAll("button,a").forEach(el=>el.tabIndex=-1);
+    document.body.appendChild(ghost);
+    state.ghost=ghost;
+    moveGhost(state,state.lastX,state.lastY);
+
+    if(navigator.vibrate)navigator.vibrate(12);
+  };
+
+  // Mouse/trackpad: immediate. Touch/pen: short hold to avoid accidental reorder while scrolling.
+  if(e.pointerType==="mouse") activate();
+  else state.holdTimer=setTimeout(activate,120);
+
+  try{handle.setPointerCapture(e.pointerId)}catch(_){}
+}
+
+function updateDrag(handle,e){
+  const s=dragState;
+  if(!s||s.pointerId!==e.pointerId)return;
+
+  s.lastX=e.clientX;
+  s.lastY=e.clientY;
+
+  const dist=Math.hypot(e.clientX-s.startX,e.clientY-s.startY);
+
+  if(!s.active && e.pointerType!=="mouse" && dist>9){
+    clearTimeout(s.holdTimer);
+    // Moving vertically before activation means ordinary page scroll, not drag.
+    cleanupDrag();
+    return;
+  }
+
+  if(!s.active)return;
+  e.preventDefault();
+
+  moveGhost(s,e.clientX,e.clientY);
+  autoScrollForPointer(e.clientY);
+
+  document.querySelectorAll(".song.drop-target").forEach(x=>x.classList.remove("drop-target"));
+  const target=getRowAtPoint(e.clientX,e.clientY,s.id);
+  if(target)target.classList.add("drop-target");
+}
+
+function endDrag(handle,e){
+  const s=dragState;
+  if(!s||s.pointerId!==e.pointerId)return;
+
+  clearTimeout(s.holdTimer);
+
+  if(!s.active){
+    cleanupDrag();
+    return;
+  }
+
+  e.preventDefault();
+  const target=getRowAtPoint(e.clientX,e.clientY,s.id);
+  const draggedId=s.id;
+  const y=e.clientY;
+
+  // Clean before render so no stale cloned/listener state survives.
+  s.ghost?.remove();
+  document.body.classList.remove("reordering");
+  dragState=null;
+
+  if(target){
+    liveReorder(draggedId,Number(target.dataset.id),y);
+  }else{
+    render();
+  }
+}
+
+function bindDragHandles(){
+  document.querySelectorAll(".drag-handle").forEach(handle=>{
+    handle.onpointerdown=e=>{
+      if(e.button!==undefined && e.button!==0)return;
+      e.preventDefault();
+      beginDrag(handle,e);
+    };
+    handle.onpointermove=e=>updateDrag(handle,e);
+    handle.onpointerup=e=>endDrag(handle,e);
+    handle.onpointercancel=e=>endDrag(handle,e);
+    handle.onlostpointercapture=e=>{
+      if(dragState && dragState.pointerId===e.pointerId && dragState.active){
+        cleanupDrag();
+        render();
+      }
+    };
+  });
+}
+
 function ranking(){return order.map((id,i)=>({rank:i+1,...byId(id)}))}
 function rankingText(){return ["ba. — my song ranking","",...ranking().map(x=>`${x.rank}. ${x.title} — ${x.release}`)].join("\n")}
 function openExport(){const rows=ranking();$("#exportPreview").innerHTML=`<div style="font-size:9px;text-transform:uppercase;letter-spacing:.17em;font-weight:900;opacity:.55">MY BA. SONG RANKING</div><h2>1 → ${rows.length}</h2>${rows.map(x=>`<div class="export-row"><b>${x.rank}</b><span>${esc(x.title)}</span></div>`).join("")}`;$("#exportModal").classList.add("show")}
@@ -241,9 +447,9 @@ function png(){
  let y=215;for(const r of rows){x.strokeStyle="rgba(0,0,0,.13)";x.beginPath();x.moveTo(p,y-18);x.lineTo(W-p,y-18);x.stroke();x.fillStyle="#777";x.font="800 17px monospace";x.fillText(String(r.rank).padStart(2,"0"),p,y+5);x.fillStyle="#111";x.font="800 21px system-ui";x.fillText(r.title,p+72,y+5);y+=rh}
  c.toBlob(b=>downloadBlob(b,"ba-song-ranking.png"))
 }
-function reset(){if(confirm("Reset to chronological release order?")){order=[...SONGS].sort((a,b)=>{const da=media.get(a.id)?.date||a.dateHint,db=media.get(b.id)?.date||b.dateHint;return da.localeCompare(db)||a.id-b.id}).map(s=>s.id);save();location.hash="";render()}}
-$("#search").oninput=render;$("#share").onclick=$("#mobileShare").onclick=$("#modalShare").onclick=copyShare;$("#reset").onclick=reset;$("#export").onclick=$("#mobileExport").onclick=openExport;$("#exportClose").onclick=closeExport;$("#previewClose").onclick=closePreview;$("#copy").onclick=copyText;$("#csv").onclick=csv;$("#png").onclick=png;
-$("#previewModal").onclick=e=>{if(e.target.id==="previewModal")closePreview()};$("#exportModal").onclick=e=>{if(e.target.id==="exportModal")closeExport()};document.onkeydown=e=>{if(e.key==="Escape"){closePreview();closeExport()}};
+function reset(){if(confirm("Reset to chronological release order?")){stopPreview();order=[...SONGS].sort((a,b)=>{const da=media.get(a.id)?.date||a.dateHint,db=media.get(b.id)?.date||b.dateHint;return da.localeCompare(db)||a.id-b.id}).map(s=>s.id);save();location.hash="";render()}}
+$("#search").oninput=render;$("#share").onclick=$("#mobileShare").onclick=$("#modalShare").onclick=copyShare;$("#reset").onclick=reset;$("#export").onclick=$("#mobileExport").onclick=openExport;$("#exportClose").onclick=closeExport;$("#copy").onclick=copyText;$("#csv").onclick=csv;$("#png").onclick=png;
+$("#exportModal").onclick=e=>{if(e.target.id==="exportModal")closeExport()};document.onkeydown=e=>{if(e.key==="Escape"){stopPreview();cleanupDrag();closeExport()}};
 load();render();hydrateCatalogue();
 </script>
 </body></html>
